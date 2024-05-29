@@ -7,4 +7,6 @@
 ## 程式相關資訊
 - 前端：HTML + CSS + JavaScript
 - 後端：PHP
-
+## 建議
+- 一個功能開一個Branch
+- [遵循Commit守則](https://heidiliu2020.github.io/git-commit-message/)，可使用Add/Update(Edit)/Del表示檔案新增、刪除、修改
