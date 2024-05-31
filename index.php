@@ -1,8 +1,17 @@
 <?php
+if (!isset($_SESSION)) {
+    session_start();
+}
+if (!isset($_SESSION['username'])) {
+    $status = "invalid";
+} else {
+    $status = "valid";
+    $is_admin = $_SESSION['is_admin'];
+}
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "CourseData";
+$dbname = "final_project";
 
 // 建立資料庫連接
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -39,13 +48,13 @@ if (count($conditions) > 0) {
 }
 
 // 獲取總記錄數
-$total_query = "SELECT COUNT(*) FROM CourseTable $where";
+$total_query = "SELECT COUNT(*) FROM nkust_course_table $where";
 $total_result = $conn->query($total_query);
 $total_rows = $total_result->fetch_row()[0];
 $total_pages = ceil($total_rows / $limit);
 
 // 獲取當前頁的記錄
-$query = "SELECT * FROM CourseTable $where LIMIT $limit OFFSET $offset";
+$query = "SELECT * FROM nkust_course_table $where LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 ?>
 
@@ -101,9 +110,22 @@ $result = $conn->query($query);
                         <a href="#"
                             class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">租借紀錄</a>
                     </li>
+                    <?php
+                    if ($status == "valid" && $is_admin == 'Y') {
+                        echo '<li>
+                        <a href="admin.php"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">管理介面</a>
+                    </li>';
+                    }
+                    ?>
                     <li>
-                        <a href="#"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登入</a>
+                        <?php
+                        if ($status == "valid") {
+                            echo '<a href="logout.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登出</a>';
+                        } else {
+                            echo '<a href="login.html" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登入</a>';
+                        }
+                        ?>
                     </li>
                 </ul>
             </div>
