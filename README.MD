@@ -39,3 +39,17 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
 **管理員帳號** 
 admin:12345678
 
+**資料庫**
+final_project 為主要的資料庫 另一個已經廢棄了
+final_project下有四個資料表：
+- user_data 
+存放登入系統中的帳戶資訊
+- course_table 
+目前沒主鍵，主鍵可能為classroom與class_time作為復合主鍵，有主鍵後應該就是1NF了，之後可以刪除一些用不到的欄位作為查詢教室是否被占用的其中一個資料庫
+- nkust_course_table
+從[高科課程資訊](https://webap.nkust.edu.tw/nkust/ag_pro/ag202.jsp)爬下來的資料表，只有第一校區的資料，同時也是主頁那個Form所查的資料
+- nkust_course_table_cleaned
+course_table 1NF之前的資料表，基本上沒用處，之後會刪掉
+
+**tools**
+基本上不用理這些，通常是拿來處理固定的SQL資料，用完一次就用不到的工具。
