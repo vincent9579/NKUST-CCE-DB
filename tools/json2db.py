@@ -25,7 +25,7 @@ def insert_into_db(connection, data):
         # 假設JSON資料結構如下: [{'選課代號': '...', '上課校區': '...', ..., '備註': '...'}, ...]
         for item in data:
             sql = """
-            INSERT INTO CourseTable (
+            INSERT INTO nkust_course_table (
                 course_code, campus, department, major, class, combined_class,
                 permanent_course_code, course_name, credits, teaching_hours,
                 practice_hours, required_or_elective, instructor, classroom,
@@ -56,8 +56,8 @@ def main():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd="25165312",
-            database="CourseData"
+            passwd="",
+            database="final_project"
             )
         if connection.is_connected():
             print("Connected to MariaDB database")
