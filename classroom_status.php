@@ -9,49 +9,53 @@ if (!isset($_SESSION['username'])) {
     $is_admin = $_SESSION['is_admin'];
 }
 
-$conn = require_once "config.php";
+$conn = require_once ('config.php');
+
 // 設置每頁顯示的記錄數
 $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // 獲取過濾條件
-$department = isset($_GET['department']) ? $_GET['department'] : '';
-$major = isset($_GET['major']) ? $_GET['major'] : '';
-$class = isset($_GET['class']) ? $_GET['class'] : '';
+$date = isset($_GET['date']) ? $_GET['date'] : '';
+$classroom = isset($_GET['classroom']) ? $_GET['classroom'] : '';
 
-// 構建過濾條件的SQL查詢
-$conditions = [];
-if ($department) {
-    $conditions[] = "department = '" . $conn->real_escape_string($department) . "'";
+// Convert date to week day
+$week_day = date('w', strtotime($date));
+// convert week day to Chinese
+$week_day = ['日', '一', '二', '三', '四', '五', '六'][$week_day];
+
+if ($date) {
+    $where = "WHERE class_time LIKE '%$week_day%'";
+} else {
+    $where = '';
 }
-if ($major) {
-    $conditions[] = "major = '" . $conn->real_escape_string($major) . "'";
-}
-if ($class) {
-    $conditions[] = "class = '" . $conn->real_escape_string($class) . "'";
-}
-$where = '';
-if (count($conditions) > 0) {
-    $where = 'WHERE ' . implode(' AND ', $conditions);
+
+if ($classroom) {
+    $where .= $where ? " AND classroom = '$classroom'" : "WHERE classroom = '$classroom'";
 }
 
 // 獲取總記錄數
-$total_query = "SELECT COUNT(*) FROM nkust_course_table $where";
+$total_query = "SELECT COUNT(*) FROM course_table $where";
 $total_result = $conn->query($total_query);
 $total_rows = $total_result->fetch_row()[0];
 $total_pages = ceil($total_rows / $limit);
 
-// 獲取當前頁的記錄
-$query = "SELECT * FROM nkust_course_table $where LIMIT $limit OFFSET $offset";
+// 獲取教室狀況
+$query = "SELECT * FROM course_table $where LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
+
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>資源租借系統</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -61,12 +65,14 @@ $result = $conn->query($query);
             document.documentElement.classList.remove('dark')
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
 </head>
 
 <body class="bg-white dark:bg-gray-900">
+    <!-- navigation -->
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="https://127.0.0.1/index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <a href="index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">資源租借系統</span>
             </a>
             <button data-collapse-toggle="navbar-default" type="button"
@@ -84,12 +90,12 @@ $result = $conn->query($query);
                     class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                     <li>
                         <a href="index.php"
-                            class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                             aria-current="page">主頁</a>
                     </li>
                     <li>
                         <a href="classroom_status.php"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">查詢教室狀況</a>
+                            class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500">查詢教室狀況</a>
                     </li>
                     <li>
                         <a href="#"
@@ -133,41 +139,52 @@ $result = $conn->query($query);
             </button>
         </div>
     </nav>
-    <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
-        <form method="GET" action="" class="flex flex-wrap space-x-4">
-            <div class="mb-4 flex-1">
-                <label for="limit" class="block text-sm font-medium text-gray-900 dark:text-white">Records per
-                    page:</label>
-                <select name="limit" id="limit" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-                    <option value="20" <?php echo $limit == 20 ? 'selected' : ''; ?>>20</option>
-                    <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
-                    <option value="100" <?php echo $limit == 100 ? 'selected' : ''; ?>>100</option>
-                </select>
+
+    <!-- 選擇教室 -->
+    <div
+        class="w-full p-4 text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div class="flex flex-wrap justify-center items-center space-x-8 rtl:space-x-reverse">
+            <!-- 搜尋框 -->
+            <form class="flex items-center space-x-4" action="" method="GET">
+                <label for="default-search"
+                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="search" id="default-search" value="<?php echo htmlspecialchars($classroom); ?>"
+                        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="教室編號" name="classroom"  />
+                    <button type="submit"
+                        class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                </div>
+           
+            <!-- 選擇日期 -->
+            
+            <div class="relative max-w-sm">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                    </svg>
+                </div>
+                <input datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today type="text"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Select date" name="date" id="date">
             </div>
-            <div class="mb-4 flex-1">
-                <label for="department"
-                    class="block text-sm font-medium text-gray-900 dark:text-white">Department:</label>
-                <input type="text" name="department" id="department"
-                    value="<?php echo htmlspecialchars($department); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div class="mb-4 flex-1">
-                <label for="major" class="block text-sm font-medium text-gray-900 dark:text-white">Major:</label>
-                <input type="text" name="major" id="major" value="<?php echo htmlspecialchars($major); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div class="mb-4 flex-1">
-                <label for="class" class="block text-sm font-medium text-gray-900 dark:text-white">Class:</label>
-                <input type="text" name="class" id="class" value="<?php echo htmlspecialchars($class); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div class="flex items-end mb-4">
-                <button type="submit"
-                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">Filter</button>
-            </div>
-        </form>
+            <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+            </form>
+        </div>
     </div>
 
+
+    <!-- 教室狀況 -->
     <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
         <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
             aria-label="Table navigation">
@@ -230,54 +247,25 @@ $result = $conn->query($query);
                 <thead
                     class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
                     <tr>
-                        <th scope="col" class="px-6 py-3">ID</th>
                         <th scope="col" class="px-6 py-3">選課代號</th>
-                        <th scope="col" class="px-6 py-3">上課校區</th>
-                        <th scope="col" class="px-6 py-3">部別</th>
                         <th scope="col" class="px-6 py-3">科系</th>
-                        <th scope="col" class="px-6 py-3">班級</th>
-                        <th scope="col" class="px-6 py-3">合班班級</th>
-                        <th scope="col" class="px-6 py-3">永久課號</th>
                         <th scope="col" class="px-6 py-3">科目名稱</th>
-                        <th scope="col" class="px-6 py-3">學分</th>
-                        <th scope="col" class="px-6 py-3">授課時數</th>
-                        <th scope="col" class="px-6 py-3">實習時數</th>
-                        <th scope="col" class="px-6 py-3">必/選</th>
                         <th scope="col" class="px-6 py-3">授課教師</th>
                         <th scope="col" class="px-6 py-3">教室</th>
-                        <th scope="col" class="px-6 py-3">修課人數</th>
-                        <th scope="col" class="px-6 py-3">人數上限</th>
                         <th scope="col" class="px-6 py-3">上課時間</th>
-                        <th scope="col" class="px-6 py-3">全英授課</th>
-                        <th scope="col" class="px-6 py-3">遠距教學</th>
-                        <th scope="col" class="px-6 py-3">授課大綱</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 whitespace-nowrap">
-                            <td class="px-6 py-4"><?php echo $row['id']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['course_code']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['campus']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['department']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['major']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['class']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['combined_class']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['permanent_course_code']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['course_name']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['credits']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['teaching_hours']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['practice_hours']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['required_or_elective']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['instructor']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['classroom']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['enrolled_students']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['max_students']; ?></td>
                             <td class="px-6 py-4"><?php echo $row['class_time']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['full_english_teaching']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['distance_learning']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['remarks']; ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
@@ -340,13 +328,12 @@ $result = $conn->query($query);
             </ul>
         </nav>
     </div>
-    </div>
+
+
+
     <script src="./static/js/theme-toggle.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 
 </html>
-
-<?php
-$conn->close();
-?>
