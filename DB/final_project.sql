@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-06-01 14:50:19
+-- 產生時間： 2024-06-03 18:01:20
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -20,6 +20,232 @@ SET time_zone = "+00:00";
 --
 -- 資料庫： `final_project`
 --
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `classroom_table`
+--
+
+CREATE TABLE `classroom_table` (
+  `classroom` varchar(10) NOT NULL DEFAULT '0',
+  `colleage` varchar(50) NOT NULL DEFAULT '',
+  `max_capacity` int(10) NOT NULL DEFAULT 0,
+  `is_reeldata` enum('Y','N') NOT NULL DEFAULT 'N'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `classroom_table`
+--
+
+INSERT INTO `classroom_table` (`classroom`, `colleage`, `max_capacity`, `is_reeldata`) VALUES
+('B113', '電資學院', 45, 'Y'),
+('B115', '電資學院', 45, 'Y'),
+('B116', '電資學院', 50, 'Y'),
+('B118', '電資學院', 70, 'Y'),
+('B119', '電資學院', 65, 'Y'),
+('B120', '電資學院', 75, 'Y'),
+('B121', '電資學院', 65, 'Y'),
+('B122', '電資學院', 75, 'Y'),
+('B123', '電資學院', 65, 'Y'),
+('B124', '電資學院', 80, 'Y'),
+('B125', '電資學院', 80, 'Y'),
+('B201', '電資學院', 45, 'Y'),
+('B211', '電資學院', 50, 'N'),
+('B222', '電資學院', 50, 'Y'),
+('B225', '電資學院', 40, 'Y'),
+('B229', '電資學院', 66, 'Y'),
+('B323', '電資學院', 55, 'Y'),
+('B337', '電資學院', 70, 'Y'),
+('B339', '電資學院', 60, 'Y'),
+('B342', '電資學院', 80, 'Y'),
+('B344', '電資學院', 70, 'Y'),
+('B345', '電資學院', 95, 'Y'),
+('B442', '電資學院', 20, 'Y'),
+('B443', '電資學院', 50, 'N'),
+('B444', '電資學院', 90, 'Y'),
+('B445', '電資學院', 105, 'Y'),
+('B501', '電資學院', 46, 'Y'),
+('B504', '電資學院', 55, 'Y'),
+('B506', '電資學院', 60, 'Y'),
+('B508', '電資學院', 50, 'N'),
+('C103', '管理學院', 80, 'Y'),
+('C104', '管理學院', 63, 'Y'),
+('C116', '管理學院', 55, 'Y'),
+('C117', '管理學院', 30, 'Y'),
+('C120', '管理學院', 50, 'Y'),
+('C123', '管理學院', 50, 'N'),
+('C124', '管理學院', 50, 'N'),
+('C125', '管理學院', 30, 'Y'),
+('C203', '管理學院', 115, 'Y'),
+('C204', '管理學院', 69, 'Y'),
+('C218', '管理學院', 70, 'Y'),
+('C219', '管理學院', 55, 'Y'),
+('C220', '管理學院', 59, 'Y'),
+('C222', '管理學院', 46, 'Y'),
+('C333', '管理學院', 30, 'Y'),
+('C338', '管理學院', 70, 'Y'),
+('C340', '管理學院', 50, 'N'),
+('C345', '管理學院', 50, 'N'),
+('C356', '管理學院', 48, 'Y'),
+('C359', '管理學院', 50, 'N'),
+('C363', '管理學院', 20, 'Y'),
+('C433', '管理學院', 35, 'Y'),
+('C434', '管理學院', 35, 'Y'),
+('C442', '管理學院', 18, 'Y'),
+('C443', '管理學院', 12, 'Y'),
+('C444', '管理學院', 55, 'Y'),
+('C445', '管理學院', 55, 'Y'),
+('C446', '管理學院', 32, 'Y'),
+('C448', '管理學院', 55, 'Y'),
+('D009', '外語學院', 55, 'Y'),
+('D101', '外語學院', 38, 'Y'),
+('D102', '外語學院', 50, 'N'),
+('D103', '外語學院', 50, 'N'),
+('D104', '外語學院', 50, 'Y'),
+('D105', '外語學院', 60, 'Y'),
+('D106', '外語學院', 60, 'Y'),
+('D107', '外語學院', 55, 'Y'),
+('D108', '外語學院', 55, 'Y'),
+('D109', '外語學院', 30, 'Y'),
+('D110', '外語學院', 50, 'N'),
+('D111', '外語學院', 20, 'Y'),
+('D201', '外語學院', 30, 'Y'),
+('D202', '外語學院', 50, 'N'),
+('D203', '外語學院', 50, 'Y'),
+('D204', '外語學院', 50, 'N'),
+('D205', '外語學院', 50, 'N'),
+('D206', '外語學院', 50, 'N'),
+('D208', '外語學院', 50, 'N'),
+('D209', '外語學院', 50, 'N'),
+('D301', '外語學院', 50, 'N'),
+('D302', '外語學院', 10, 'Y'),
+('D308', '外語學院', 50, 'Y'),
+('D414', '外語學院', 20, 'Y'),
+('D415', '外語學院', 36, 'Y'),
+('D416', '外語學院', 38, 'Y'),
+('D417', '外語學院', 30, 'Y'),
+('D418', '外語學院', 40, 'Y'),
+('D516', '外語學院', 30, 'Y'),
+('D517', '外語學院', 30, 'Y'),
+('E001', '財金學院', 100, 'Y'),
+('E002', '財金學院', 105, 'Y'),
+('E003', '財金學院', 90, 'Y'),
+('E004', '財金學院', 55, 'Y'),
+('E005', '財金學院', 70, 'Y'),
+('E006', '財金學院', 110, 'Y'),
+('E007', '財金學院', 120, 'Y'),
+('E008', '財金學院', 110, 'Y'),
+('E009', '財金學院', 55, 'Y'),
+('E010', '財金學院', 70, 'Y'),
+('E011', '財金學院', 50, 'Y'),
+('E012', '財金學院', 50, 'Y'),
+('E013', '財金學院', 50, 'Y'),
+('E014', '財金學院', 100, 'Y'),
+('E015', '財金學院', 50, 'Y'),
+('E016', '財金學院', 50, 'Y'),
+('E101', '財金學院', 50, 'Y'),
+('E102', '財金學院', 60, 'Y'),
+('E103', '財金學院', 15, 'Y'),
+('E104', '財金學院', 46, 'Y'),
+('E105', '財金學院', 46, 'Y'),
+('E106', '財金學院', 55, 'Y'),
+('E107', '財金學院', 46, 'Y'),
+('E108', '財金學院', 50, 'Y'),
+('E109', '財金學院', 55, 'Y'),
+('E110', '財金學院', 55, 'Y'),
+('E113', '財金學院', 55, 'Y'),
+('E115', '財金學院', 55, 'Y'),
+('E116', '財金學院', 50, 'N'),
+('E117', '財金學院', 50, 'N'),
+('E118', '財金學院', 55, 'Y'),
+('E119', '財金學院', 50, 'N'),
+('E120', '財金學院', 50, 'N'),
+('E201', '財金學院', 50, 'Y'),
+('E202', '財金學院', 50, 'Y'),
+('E203', '財金學院', 45, 'Y'),
+('E204', '財金學院', 65, 'Y'),
+('E205', '財金學院', 45, 'Y'),
+('E206', '財金學院', 40, 'Y'),
+('E207', '財金學院', 65, 'Y'),
+('E209', '財金學院', 66, 'Y'),
+('E210', '財金學院', 66, 'Y'),
+('E211', '財金學院', 50, 'Y'),
+('E212', '財金學院', 70, 'Y'),
+('E213', '財金學院', 70, 'Y'),
+('E214', '財金學院', 65, 'Y'),
+('E216', '財金學院', 70, 'Y'),
+('E217', '財金學院', 70, 'Y'),
+('E220', '財金學院', 55, 'Y'),
+('E301', '財金學院', 60, 'Y'),
+('E302', '財金學院', 60, 'Y'),
+('E303', '財金學院', 60, 'Y'),
+('E304', '財金學院', 55, 'Y'),
+('E305', '財金學院', 60, 'Y'),
+('E306', '財金學院', 35, 'Y'),
+('E307', '財金學院', 55, 'Y'),
+('E308', '財金學院', 50, 'N'),
+('E309', '財金學院', 50, 'Y'),
+('E310', '財金學院', 70, 'Y'),
+('E311', '財金學院', 60, 'Y'),
+('E312', '財金學院', 20, 'Y'),
+('E313', '財金學院', 55, 'Y'),
+('E314', '財金學院', 40, 'Y'),
+('E315', '財金學院', 35, 'Y'),
+('E317', '財金學院', 55, 'Y'),
+('E318', '財金學院', 60, 'Y'),
+('E319', '財金學院', 60, 'Y'),
+('E403', '財金學院', 55, 'Y'),
+('E416', '財金學院', 30, 'Y'),
+('E419', '財金學院', 60, 'Y'),
+('E420', '財金學院', 60, 'Y'),
+('E421', '財金學院', 60, 'Y'),
+('E422', '財金學院', 60, 'Y'),
+('E423', '財金學院', 60, 'Y'),
+('E424', '財金學院', 60, 'Y'),
+('E514', '財金學院', 15, 'Y'),
+('E522', '財金學院', 15, 'Y'),
+('E525', '財金學院', 30, 'Y'),
+('E534', '財金學院', 50, 'N'),
+('F106', '工學院', 55, 'Y'),
+('F107', '工學院', 55, 'Y'),
+('F108', '工學院', 80, 'Y'),
+('F109', '工學院', 90, 'Y'),
+('F124', '工學院', 70, 'Y'),
+('F126', '工學院', 25, 'Y'),
+('F128', '工學院', 60, 'Y'),
+('F129', '工學院', 80, 'Y'),
+('F131', '工學院', 55, 'Y'),
+('F146', '工學院', 40, 'Y'),
+('F147', '工學院', 50, 'N'),
+('F151', '工學院', 40, 'Y'),
+('F208', '工學院', 55, 'Y'),
+('F209', '工學院', 50, 'N'),
+('F223', '工學院', 55, 'Y'),
+('F224', '工學院', 50, 'N'),
+('F225', '工學院', 50, 'Y'),
+('F410', '工學院', 16, 'Y'),
+('F452', '工學院', 50, 'Y'),
+('F455', '工學院', 65, 'Y'),
+('F456', '工學院', 50, 'N'),
+('F553', '工學院', 30, 'Y'),
+('F554', '工學院', 40, 'Y'),
+('H303', '產業創新園區', 40, 'Y'),
+('J001', '圖書資訊大樓', 50, 'Y'),
+('J009', '圖書資訊大樓', 48, 'Y'),
+('J124', '圖書資訊大樓', 69, 'Y'),
+('P102', '智慧防災實作工場', 50, 'N'),
+('P202', '智慧防災實作工場', 40, 'Y'),
+('P302', '智慧防災實作工場', 40, 'Y'),
+('S109', '跨領域實作工場', 50, 'N'),
+('S202', '跨領域實作工場', 50, 'Y'),
+('S204', '跨領域實作工場', 70, 'Y'),
+('S210', '跨領域實作工場', 50, 'N'),
+('S211', '跨領域實作工場', 50, 'N'),
+('T210', '智慧製造實作工場', 65, 'Y'),
+('T212', '智慧製造實作工場', 60, 'Y'),
+('V101', '實作工場', 20, 'Y'),
+('V106', '實作工場', 50, 'N');
 
 -- --------------------------------------------------------
 
@@ -5836,6 +6062,81 @@ INSERT INTO `nkust_course_table_cleaned` (`id`, `course_code`, `campus`, `depart
 -- --------------------------------------------------------
 
 --
+-- 資料表結構 `staff_account`
+--
+
+CREATE TABLE `staff_account` (
+  `user_id` int(11) DEFAULT NULL,
+  `staff_id` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `staff_account`
+--
+
+INSERT INTO `staff_account` (`user_id`, `staff_id`) VALUES
+(1, 'S1001');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `staff_table`
+--
+
+CREATE TABLE `staff_table` (
+  `staff_id` varchar(10) NOT NULL DEFAULT '',
+  `staff_name` varchar(10) DEFAULT NULL,
+  `staff_room` varchar(10) DEFAULT NULL,
+  `staff_department` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `staff_table`
+--
+
+INSERT INTO `staff_table` (`staff_id`, `staff_name`, `staff_room`, `staff_department`) VALUES
+('S1001', '王大明', 'F332', '電腦與通訊工程系');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `student_account`
+--
+
+CREATE TABLE `student_account` (
+  `user_id` int(11) DEFAULT NULL,
+  `std_id` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `student_account`
+--
+
+INSERT INTO `student_account` (`user_id`, `std_id`) VALUES
+(3, 'C110110223');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `student_table`
+--
+
+CREATE TABLE `student_table` (
+  `std_id` varchar(10) NOT NULL DEFAULT '',
+  `std_name` varchar(10) NOT NULL,
+  `std_departments` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `student_table`
+--
+
+INSERT INTO `student_table` (`std_id`, `std_name`, `std_departments`) VALUES
+('C110110223', '劉易蒼', '電腦與通訊工程系');
+
+-- --------------------------------------------------------
+
+--
 -- 資料表結構 `user_data`
 --
 
@@ -5859,6 +6160,12 @@ INSERT INTO `user_data` (`user_id`, `user_name`, `user_password`, `is_admin`) VA
 --
 
 --
+-- 資料表索引 `classroom_table`
+--
+ALTER TABLE `classroom_table`
+  ADD PRIMARY KEY (`classroom`);
+
+--
 -- 資料表索引 `course_table`
 --
 ALTER TABLE `course_table`
@@ -5869,6 +6176,32 @@ ALTER TABLE `course_table`
 --
 ALTER TABLE `nkust_course_table`
   ADD PRIMARY KEY (`id`);
+
+--
+-- 資料表索引 `staff_account`
+--
+ALTER TABLE `staff_account`
+  ADD KEY `staff_ac_id` (`user_id`),
+  ADD KEY `staff_id` (`staff_id`);
+
+--
+-- 資料表索引 `staff_table`
+--
+ALTER TABLE `staff_table`
+  ADD PRIMARY KEY (`staff_id`);
+
+--
+-- 資料表索引 `student_account`
+--
+ALTER TABLE `student_account`
+  ADD KEY `std_user_id` (`user_id`),
+  ADD KEY `std_id` (`std_id`);
+
+--
+-- 資料表索引 `student_table`
+--
+ALTER TABLE `student_table`
+  ADD PRIMARY KEY (`std_id`);
 
 --
 -- 資料表索引 `user_data`
@@ -5892,6 +6225,24 @@ ALTER TABLE `nkust_course_table`
 --
 ALTER TABLE `user_data`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- 已傾印資料表的限制式
+--
+
+--
+-- 資料表的限制式 `staff_account`
+--
+ALTER TABLE `staff_account`
+  ADD CONSTRAINT `staff_ac_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `staff_id` FOREIGN KEY (`staff_id`) REFERENCES `staff_table` (`staff_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- 資料表的限制式 `student_account`
+--
+ALTER TABLE `student_account`
+  ADD CONSTRAINT `std_id` FOREIGN KEY (`std_id`) REFERENCES `student_table` (`std_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `std_user_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
