@@ -16,36 +16,114 @@ $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// 獲取過濾條件
-$date = isset($_GET['date']) ? $_GET['date'] : '';
+
 $classroom = isset($_GET['classroom']) ? $_GET['classroom'] : '';
 
-// Convert date to week day
-$week_day = date('w', strtotime($date));
-// convert week day to Chinese
-$week_day = ['日', '一', '二', '三', '四', '五', '六'][$week_day];
-
-if ($date) {
-    $where = "WHERE class_time LIKE '%$week_day%'";
-} else {
-    $where = '';
-}
-
+$where = '';
+$params = [];
 if ($classroom) {
-    $where .= $where ? " AND classroom = '$classroom'" : "WHERE classroom = '$classroom'";
+    $where .= $where ? " AND classroom = ?" : "WHERE classroom = ?";
+    $params[] = $classroom;
 }
 
 // 獲取總記錄數
 $total_query = "SELECT COUNT(*) FROM course_table $where";
-$total_result = $conn->query($total_query);
-$total_rows = $total_result->fetch_row()[0];
-$total_pages = ceil($total_rows / $limit);
+$total_stmt = $conn->prepare($total_query);
+if ($total_stmt) {
+    if ($params) {
+        $types = str_repeat('s', count($params));
+        $total_stmt->bind_param($types, ...$params);
+    }
+    $total_stmt->execute();
+    $total_result = $total_stmt->get_result();
+    $total_rows = $total_result->fetch_row()[0];
+    $total_pages = ceil($total_rows / $limit);
+    $total_stmt->close();
+}
+
+function parseSchedule($input)
+{
+    // 匹配不同格式的字符串
+    $pattern = '/\((.*?)\)(\d+)-(\d+)|\((.*?)\)(\d+)|\((.*?)\)([A-Za-z])/';
+    if (preg_match($pattern, $input, $matches)) {
+        // 將中文星期轉換為數字星期
+        $chinese_weekdays = [
+            '一' => 1,
+            '二' => 2,
+            '三' => 3,
+            '四' => 4,
+            '五' => 5,
+            '六' => 6,
+            '日' => 7
+        ];
+
+        // 確定星期
+        $weekday_chinese = $matches[1] ?: ($matches[4] ?: $matches[6]);
+        $weekday = isset($chinese_weekdays[$weekday_chinese]) ? $chinese_weekdays[$weekday_chinese] : null;
+
+        // 確定時間段或單個時間
+        if (!empty($matches[2]) && !empty($matches[3])) {
+            // 处理时间段 5-7 这种格式
+            $start = intval($matches[2]);
+            $end = intval($matches[3]);
+            $period = range($start, $end);
+        } elseif (!empty($matches[5])) {
+            // 处理单个数字 5 这种格式
+            $period = [intval($matches[5])];
+        } elseif (!empty($matches[7])) {
+            // 处理单个字母 A 这种格式
+            $period = [$matches[7]];
+        } else {
+            $period = [];
+        }
+
+        return [
+            'weekday' => $weekday,
+            'period' => $period
+        ];
+    }
+
+    return null; // 若匹配失敗則返回 null
+}
+
 
 // 獲取教室狀況
 $query = "SELECT * FROM course_table $where LIMIT $limit OFFSET $offset";
-$result = $conn->query($query);
+$stmt = $conn->prepare($query);
+if ($stmt) {
+    if ($params) {
+        $types = str_repeat('s', count($params));
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
+    $timeTable = [[], [], [], [], [], [], []];
 
+    // 將result
+    while ($row = $result->fetch_assoc()) {
+        $parseTime = parseSchedule($row['class_time']);
+        if ($parseTime) {
+            $weekday = $parseTime['weekday'];
+            $period = $parseTime['period'];
+            foreach ($period as $p) {
+                // 1, 2, 3 ,4 ,A ,5 ,6 ,7 ,8 ,9 ,10, 11, 12, 13
+                if ($p < 5) {
+                    $timeTable[$weekday - 1][$p - 1] = $row;
+                }
+                if ($p == 'A') {
+                    $timeTable[$weekday - 1][4] = $row;
+                }
+                if ($p >= 5) {
+                    $timeTable[$weekday - 1][$p] = $row;
+                }
+
+            }
+        }
+
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +143,7 @@ $result = $conn->query($query);
             document.documentElement.classList.remove('dark')
         }
     </script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
 </head>
 
@@ -141,196 +220,120 @@ $result = $conn->query($query);
     </nav>
 
     <!-- 選擇教室 -->
-    <div
-        class="w-full p-4 text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <div class="flex flex-wrap justify-center items-center space-x-8 rtl:space-x-reverse">
-            <!-- 搜尋框 -->
-            <form class="flex items-center space-x-4" action="" method="GET">
-                <label for="default-search"
-                    class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </div>
-                    <input type="search" id="default-search" value="<?php echo htmlspecialchars($classroom); ?>"
-                        class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="教室編號" name="classroom" />
-                </div>
+    <?php if ($classroom == "") {
+        echo '
+        <div class="flex h-screen justify-center items-center">
+        <div
+            class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 mx-auto">
+            <h5 class="mb-3 text-base font-semibold text-gray-900 md:text-xl dark:text-white">
+                選擇教室
+            </h5>
 
-                <!-- 選擇日期 -->
+            <p class="text-sm font-normal text-gray-500 dark:text-gray-400">選擇一個教室即可查詢該教室的課表及租用情況</p>
+            <ul class="my-4 space-y-3">
+                <form action="" method="GET">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="search" id="default-search" value=""
+                            class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="教室編號" name="classroom" />
 
-                <div class="relative max-w-sm">
-                    <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
-                        </svg>
                     </div>
-                    <input datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today type="text"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Select date" name="date" id="date">
-                </div>
-                <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-            </form>
+                    
+                    <button type="submit"
+                        class="w-full mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                </form>
+
+            </ul>
+            
         </div>
     </div>
+        ';
+    } else {
+        $periodToTime = [
+            "0" => "08:10-09:00",
+            "1" => "09:10-10:00",
+            "2" => "10:10-11:00",
+            "3" => "11:10-12:00",
+            "4" => "12:10-13:00",
+            "5" => "13:30-14:20",
+            "6" => "14:30-15:20",
+            "7" => "15:30-16:20",
+            "8" => "16:30-17:20",
+            "9" => "17:30-18:20",
+            "10" => "18:30-19:20",
+            "11" => "19:25-20:15",
+            "12" => "20:20-21:10",
+            "13" => "21:15-22:05"
+        ];
+        echo '
+        <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      </div>  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
+            <thead
+                class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
+                <tr>
+                    <th scope="col" class="px-6 py-3">節次</th>
+                    <th scope="col" class="px-6 py-3">星期一</th>
+                    <th scope="col" class="px-6 py-3">星期二</th>
+                    <th scope="col" class="px-6 py-3">星期三</th>
+                    <th scope="col" class="px-6 py-3">星期四</th>
+                    <th scope="col" class="px-6 py-3">星期五</th>
+                    <th scope="col" class="px-6 py-3">星期六</th>
+                    <th scope="col" class="px-6 py-3">星期日</th>
 
+                </tr>
+            </thead>
+            <tbody>
 
-    <!-- 教室狀況 -->
-    <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
-        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-            aria-label="Table navigation">
-            <span
-                class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-                Showing <span
-                    class="font-semibold text-gray-900 dark:text-white"><?php echo $offset + 1; ?>-<?php echo min($offset + $limit, $total_rows); ?></span>
-                of <span class="font-semibold text-gray-900 dark:text-white"><?php echo $total_rows; ?></span>
-            </span>
-            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                <?php if ($page > 1): ?>
-                    <li>
-                        <a href="?page=1&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">First</a>
-                    </li>
-                    <li>
-                        <a href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
-                    </li>
-                <?php endif; ?>
+                ';
+        for ($i = 0; $i < 14; $i++) {
+            echo '<tr class=\'border-b border-gray-200 dark:border-gray-700\'>';
+            echo '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">';
+            if ($i < 4) {
+                echo $i + 1;
+            } elseif ($i == 4) {
+                echo 'A';
+            } else {
+                echo $i;
+            }
+            echo '<br>';
+            echo $periodToTime[$i];
+            echo '</td>';
+            for ($j = 0; $j < 7; $j++) {
+                echo '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">';
+                if (isset($timeTable[$j][$i])) {
+                    $row = $timeTable[$j][$i];
+                    echo $row['course_name'];
+                    echo '<br>';
+                    echo $row['instructor'];
+                    echo '<br>';
+                    echo $row['major'];
 
-                <?php
-                // 顯示頁碼
-                $displayed_pages = [];
-                if ($total_pages <= 10) {
-                    $displayed_pages = range(1, $total_pages);
                 } else {
-                    $displayed_pages = array_merge(
-                        range(1, 2),
-                        ($page > 5 ? ['...'] : []),
-                        range(max(3, $page - 2), min($total_pages - 2, $page + 2)),
-                        ($page < $total_pages - 4 ? ['...'] : []),
-                        range($total_pages - 1, $total_pages)
-                    );
+                    echo '<input  id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">';
                 }
-
-                foreach ($displayed_pages as $p) {
-                    if ($p === '...') {
-                        echo '<li><span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">...</span></li>';
-                    } else {
-                        echo '<li><a href="?page=' . $p . '&limit=' . $limit . '" class="flex items-center justify-center px-3 h-8 leading-tight ' . ($p == $page ? 'text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white') . '">' . $p . '</a></li>';
-                    }
-                }
-                ?>
-
-                <?php if ($page < $total_pages): ?>
-                    <li>
-                        <a href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
-                    </li>
-                    <li>
-                        <a href="?page=<?php echo $total_pages; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Last</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
-                <thead
-                    class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">選課代號</th>
-                        <th scope="col" class="px-6 py-3">科系</th>
-                        <th scope="col" class="px-6 py-3">科目名稱</th>
-                        <th scope="col" class="px-6 py-3">授課教師</th>
-                        <th scope="col" class="px-6 py-3">教室</th>
-                        <th scope="col" class="px-6 py-3">上課時間</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 whitespace-nowrap">
-                            <td class="px-6 py-4"><?php echo $row['course_code']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['major']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['course_name']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['instructor']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['classroom']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['class_time']; ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-            aria-label="Table navigation">
-            <span
-                class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-                Showing <span
-                    class="font-semibold text-gray-900 dark:text-white"><?php echo $offset + 1; ?>-<?php echo min($offset + $limit, $total_rows); ?></span>
-                of <span class="font-semibold text-gray-900 dark:text-white"><?php echo $total_rows; ?></span>
-            </span>
-            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                <?php if ($page > 1): ?>
-                    <li>
-                        <a href="?page=1&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">First</a>
-                    </li>
-                    <li>
-                        <a href="?page=<?php echo $page - 1; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
-                    </li>
-                <?php endif; ?>
-
-                <?php
-                // 顯示頁碼
-                $displayed_pages = [];
-                if ($total_pages <= 10) {
-                    $displayed_pages = range(1, $total_pages);
-                } else {
-                    $displayed_pages = array_merge(
-                        range(1, 2),
-                        ($page > 5 ? ['...'] : []),
-                        range(max(3, $page - 2), min($total_pages - 2, $page + 2)),
-                        ($page < $total_pages - 4 ? ['...'] : []),
-                        range($total_pages - 1, $total_pages)
-                    );
-                }
-
-                foreach ($displayed_pages as $p) {
-                    if ($p === '...') {
-                        echo '<li><span class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400">...</span></li>';
-                    } else {
-                        echo '<li><a href="?page=' . $p . '&limit=' . $limit . '" class="flex items-center justify-center px-3 h-8 leading-tight ' . ($p == $page ? 'text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white') . '">' . $p . '</a></li>';
-                    }
-                }
-                ?>
-
-                <?php if ($page < $total_pages): ?>
-                    <li>
-                        <a href="?page=<?php echo $page + 1; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
-                    </li>
-                    <li>
-                        <a href="?page=<?php echo $total_pages; ?>&limit=<?php echo $limit; ?>"
-                            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Last</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
+                echo '</td>';
+            }
+            echo '</tr>';
+        }
+        echo '
+            </tbody>
+        </table>
     </div>
+    </div>
+        ';
+    }
+    ?>
 
-
-
+    <!-- 必要js -->
     <script src="./static/js/theme-toggle.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 
