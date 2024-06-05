@@ -11,10 +11,6 @@ if (!isset($_SESSION['username'])) {
 
 $conn = require_once ('config.php');
 
-// 設置每頁顯示的記錄數
-$limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
-$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$offset = ($page - 1) * $limit;
 
 
 $classroom = isset($_GET['classroom']) ? $_GET['classroom'] : '';
@@ -40,69 +36,9 @@ if ($classroom) {
     $params[] = $classroom;
 }
 
-// 獲取總記錄數
-$total_query = "SELECT COUNT(*) FROM course_table $where";
-$total_stmt = $conn->prepare($total_query);
-if ($total_stmt) {
-    if ($params) {
-        $types = str_repeat('s', count($params));
-        $total_stmt->bind_param($types, ...$params);
-    }
-    $total_stmt->execute();
-    $total_result = $total_stmt->get_result();
-    $total_rows = $total_result->fetch_row()[0];
-    $total_pages = ceil($total_rows / $limit);
-    $total_stmt->close();
-}
-
-function parseSchedule($input)
-{
-    // 匹配不同格式的字符串
-    $pattern = '/\((.*?)\)(\d+)-(\d+)|\((.*?)\)(\d+)|\((.*?)\)([A-Za-z])/';
-    if (preg_match($pattern, $input, $matches)) {
-        // 將中文星期轉換為數字星期
-        $chinese_weekdays = [
-            '一' => 1,
-            '二' => 2,
-            '三' => 3,
-            '四' => 4,
-            '五' => 5,
-            '六' => 6,
-            '日' => 7
-        ];
-
-        // 確定星期
-        $weekday_chinese = $matches[1] ?: ($matches[4] ?: $matches[6]);
-        $weekday = isset($chinese_weekdays[$weekday_chinese]) ? $chinese_weekdays[$weekday_chinese] : null;
-
-        // 確定時間段或單個時間
-        if (!empty($matches[2]) && !empty($matches[3])) {
-            // 处理时间段 5-7 这种格式
-            $start = intval($matches[2]);
-            $end = intval($matches[3]);
-            $period = range($start, $end);
-        } elseif (!empty($matches[5])) {
-            // 处理单个数字 5 这种格式
-            $period = [intval($matches[5])];
-        } elseif (!empty($matches[7])) {
-            // 处理单个字母 A 这种格式
-            $period = [$matches[7]];
-        } else {
-            $period = [];
-        }
-
-        return [
-            'weekday' => $weekday,
-            'period' => $period
-        ];
-    }
-
-    return null; // 若匹配失敗則返回 null
-}
-
 
 // 獲取教室狀況
-$query = "SELECT * FROM course_table $where LIMIT $limit OFFSET $offset";
+$query = "SELECT * FROM course_table $where ORDER BY weekday, period";
 $stmt = $conn->prepare($query);
 if ($stmt) {
     if ($params) {
@@ -117,25 +53,32 @@ if ($stmt) {
 
     // 將result
     while ($row = $result->fetch_assoc()) {
-        $parseTime = parseSchedule($row['class_time']);
-        if ($parseTime) {
-            $weekday = $parseTime['weekday'];
-            $period = $parseTime['period'];
-            foreach ($period as $p) {
-                // 1, 2, 3 ,4 ,A ,5 ,6 ,7 ,8 ,9 ,10, 11, 12, 13
-                if ($p < 5) {
-                    $timeTable[$weekday - 1][$p - 1] = $row;
-                }
-                if ($p == 'A') {
-                    $timeTable[$weekday - 1][4] = $row;
-                }
-                if ($p >= 5) {
-                    $timeTable[$weekday - 1][$p] = $row;
-                }
+        $chinese_weekdays = [
+            '一' => 1,
+            '二' => 2,
+            '三' => 3,
+            '四' => 4,
+            '五' => 5,
+            '六' => 6,
+            '日' => 7
+        ];
+        $weekday = $row['weekday'];
+        $weekday = $chinese_weekdays[$weekday];
+        $period = $row['period'];
 
-            }
+        // 1, 2, 3 ,4 ,A ,5 ,6 ,7 ,8 ,9 ,10, 11, 12, 13
+        if ($period < '5') {
+            // string to int
+            $period = (int) $period;
+            $timeTable[$weekday - 1][$period - 1] = $row;
         }
-
+        if ($period == 'A') {
+            $timeTable[$weekday - 1][4] = $row;
+        }
+        if ($period >= '5') {
+            $period = (int) $period;
+            $timeTable[$weekday - 1][$period] = $row;
+        }
     }
 }
 ?>
@@ -510,13 +453,14 @@ if ($stmt) {
             var time_range = "";
             var start_time = "";
             var end_time = "";
+
             checkboxes.forEach(function (checkbox) {
                 values.push(checkbox.value);
             });
+            
             if (values.length == 0) {
                 return false;
             } else {
-
                 var numToWeekday = {
                     0: "一",
                     1: "二",
@@ -526,6 +470,7 @@ if ($stmt) {
                     5: "六",
                     6: "日"
                 };
+
                 for (var i = 0; i < values.length; i++) {
                     // (4)4 to weekday=4 and time=4
                     var weekday = values[i].split("_")[0];
@@ -549,7 +494,9 @@ if ($stmt) {
                         }
                     }
                 }
+
                 times.sort();
+
                 if (times.length == 1) {
                     // list [5] to 5
                     start_time = times[0];
@@ -563,11 +510,11 @@ if ($stmt) {
                             if (times[0] <= 4) {
                                 start_time = times[0];
                                 end_time = times[1];
-                                time_range = start + "-" + end;
+            
                             } else {
                                 start_time = times[1];
                                 end_time = times[0];
-                                time_range = start + "-" + end;
+            
                             }
 
                         } else {
@@ -575,27 +522,20 @@ if ($stmt) {
                                 // list [5,6,A] to A-6
                                 start_time = times[0];
                                 end_time = times[2];
-                                time_range = start + "-" + end;
+            
                             } else {
                                 // list [4,5,A] to 4-A
                                 start_time = times[2];
                                 end_time = times[1];
-                                time_range = start + "-" + end;
                             }
-
                         }
-
                     }
-
                     // list [5,6,7] to 5-7
                     start_time = times[0];
                     end_time = times[times.length - 1];
-                    time_range = start + "-" + end;
-
-
-
                 }
             }
+            
             var postData = {
                 weekday: weekdays[0],
                 start_time: start_time,

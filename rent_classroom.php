@@ -8,7 +8,7 @@ if (!isset($_SESSION['username'])) {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
 }
-$conn = require_once('config.php');
+$conn = require_once ('config.php');
 if ($conn) {
     $stmt = $conn->prepare("SELECT st.std_name FROM user_data ud JOIN student_account sa ON ud.user_id = sa.user_id JOIN student_table st ON sa.std_id = st.std_id WHERE ud.user_name = ?");
     $stmt->bind_param("s", $_SESSION['username']);
@@ -30,7 +30,7 @@ if ($conn) {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD']  == "POST"){
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $jsonData = $_POST['data'];
     $decodeData = json_decode($jsonData, true);
     $classroom = $decodeData['classroom'];
@@ -55,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -139,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
 
     <!-- 在這裡插入你的內容 -->
     <div class="flex h-screen justify-center items-center">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <form class="p-4 md:p-5" method="POST" action="rent.php">
+        <div class="w-96 relative bg-white rounded-lg shadow dark:bg-gray-700 ">
+            <div class="w-full p-4 md:p-5">
                 <input type="hidden" name="classroom" value="">
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
@@ -150,43 +152,102 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                             placeholder="" required="" value="<?php echo htmlspecialchars($std_name) ?>">
                     </div>
-                    <div class="col-span-2">
-                        <label for="classroom"
-                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">教室</label>
-                        <input type="text" name="classroom" id="classroom"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="" required="" value="<?php echo htmlspecialchars($classroom) ?>">
-                    </div>
+                    <?php
+                    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                        echo '
+                            <div class="col-span-2">
+                            <label for="classroom"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">教室</label>
+                            <label
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                ' . $classroom . '
+                            </label>
+                             </div>
+                            ';
+                    } else {
+                        echo '
+                            <div class="col-span-2">
+                            <label for="classroom"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">教室</label>
+                            <input type="text" name="classroom" id="classroom"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                placeholder="" required="" value="">
+                             </div>
+                            ';
+                    }
+                    ?>
+
                     <div class="col-span-2">
                         <label for="price"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">日期</label>
                         <div class="relative max-w-sm">
-                            <input type="text" name="rent_date" id="rent_date"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                placeholder="日期" value="">
+                            <select id="date"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <?php
+                                if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                                    $today = date('Y/m/d');
+                                    $weekdayMap = [
+                                        '一' => 1,
+                                        '二' => 2,
+                                        '三' => 3,
+                                        '四' => 4,
+                                        '五' => 5,
+                                        '六' => 6,
+                                        '日' => 7,
+                                    ];
+
+                                    $currentWeekday = date('N', strtotime($today));
+
+                                    // Calculate the difference between current weekday and selected weekday
+                                    $difference = $weekdayMap[$weekday] - $currentWeekday;
+                                    if ($difference <= 0) {
+                                        $difference += 7;
+                                    }
+
+                                    // Get the next four weekdays
+                                    $nextWeekdays = [];
+                                    for ($i = 0; $i < 28; $i += 7) {
+                                        $nextWeekdays[] = date('Y/m/d', strtotime("+$difference day", strtotime($today)));
+                                        $difference += 7;
+                                    }
+
+                                    // Output the options
+                                    foreach ($nextWeekdays as $nextWeekday) {
+                                        echo '<option value="' . $nextWeekday . '">' . $nextWeekday . '</option>';
+                                    }
+                                } else {
+                                    echo '<option value="" selected>Select date</option>';
+                                    foreach ($weekdayMap as $key => $value) {
+                                        echo '<option value="' . $key . '">' . $key . '</option>';
+                                    }
+                                }
+                                ?>
+
+                            </select>
                         </div>
                     </div>
                     <?php
-                        if ($_SERVER['REQUEST_METHOD']  == "POST") {
-                            echo '
+                    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                        echo '
                             
                             <div class="col-span-2 sm:col-span-1">
                         <label for="time"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">開始借用時間</label>
-                        <input type="number" name="start-time" id="start-time"
-                            class="relative max-w-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="開始借用時間" value="' . $start_time . '">
+                        <label class="relative max-w-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            ' . $start_time . '
+                        </label>
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="time"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">歸還時間</label>
-                        <input type="number" name="end-time" id="end-time"
-                            class="relative max-w-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="歸還時間" value="' . $end_time . '">
+                        <label class="relative max-w-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            ' . $end_time . '
+                        </label>
+                            
                     </div>
                     ';
-                        } else {
-                            echo '
+                    } else {
+                        echo '
                             <div class="col-span-2 sm:col-span-1">
                         <label for="time"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">開始借用時間</label>
@@ -265,10 +326,10 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
                     </script>
 
                         ';
-                        }
+                    }
 
                     ?>
-                    
+
 
                     <div class="col-span-2">
                         <label for="description"
@@ -278,7 +339,7 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
                             placeholder="Write product description here"></textarea>
                     </div>
                 </div>
-                <button type="submit" onclick="return validateForm()"
+                <button type="submit" onclick="return submitForm()"
                     class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
@@ -289,11 +350,47 @@ if ($_SERVER['REQUEST_METHOD']  == "POST"){
                     送出
                 </button>
 
-            </form>
+            </div>
         </div>
     </div>
 
+    <script>
+        function submitForm() {
+            var classroom = "<?php echo $classroom ?>";
+            var weekday = "<?php echo $weekday ?>";
+            var rent_date = document.getElementById('date').value;
+            var start_period = "<?php echo $start_time ?>";
+            var end_period = "<?php echo $end_time ?>";
+            var rent_reason = document.getElementById('description').value;
 
+            if (classroom === "" || weekday === "" || rent_date === "" || start_period === "" || end_period === "") {
+                alert("Please fill in all the fields.");
+                return false;
+            }
+
+            var data = {
+                classroom: classroom,
+                rent_date: rent_date,
+                start_period: start_period,
+                end_period: end_period,
+                rent_reason: rent_reason
+            };
+
+            console.log(data);
+
+            $.ajax({
+                type: "POST",
+                url: "rent.php",
+                data: { data: JSON.stringify(data) },
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
+        }
+    </script>
 
 
 

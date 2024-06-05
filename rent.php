@@ -11,16 +11,36 @@ if (!isset($_SESSION['username'])) {
 
 $conn = require_once ('config.php');
 
-$classroom = $_POST['classroom'];
-$std_name = $_POST['std_name'];
-$rent_date = $_POST['rent_date'];
-$rent_time = $_SESSION['rent_time'];
-$rent_reason = $_POST['rent_reason'];
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $jsonData = $_POST['data'];
+    $decodeData = json_decode($jsonData, true);
+    $username = $_SESSION['username'];
+    $classroom = $decodeData['classroom'];
+    $rent_date = $decodeData['rent_date'];
+    $start_period = $decodeData['start_period'];
+    $end_period = $decodeData['end_period'];
+    $reason = $decodeData['rent_reason'];
+    //get ID auto increment
+    $stmt = $conn->prepare("SELECT MAX(ID) FROM rental_table");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $rent_id = $row['MAX(ID)'] + 1;
 
-echo $classroom;
-echo $std_name;
-echo $rent_date;
-echo $rent_time;
-echo $rent_reason;
+    $conn->begin_transaction();
+    // Insert into rent_data
+    for ($i = $start_period; $i <= $end_period; $i++) {
+        $stmt = $conn->prepare("INSERT INTO rental_table (ID, username, classroom, rent_date, rent_period, reason) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $rent_id, $username, $classroom, $rent_date, $i, $reason);
+        $stmt->execute();
+
+    }
+    $conn->commit();
+    $conn->close();
+}
+
+
+
+
 
 ?>
