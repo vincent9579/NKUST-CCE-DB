@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -69,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 在這裡插入你的內容 -->
     <div class="flex h-screen justify-center items-center">
@@ -113,9 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <label for="price"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">日期</label>
                         <div class="relative max-w-sm">
+                            <?php
+
+                            if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                                echo '
                             <select id="date"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <?php
+                                ';
                                 if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                     $today = date('Y/m/d');
                                     $weekdayMap = [
@@ -153,9 +158,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                         echo '<option value="' . $key . '">' . $key . '</option>';
                                     }
                                 }
-                                ?>
 
-                            </select>
+                                echo '</select>';
+                            } else {
+                                echo '
+                                    <div class="relative max-w-sm">
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                        </svg>
+                                    </div>
+                                    <input datepicker datepicker-autohide datepicker-format="yyyy/mm/dd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date">
+                                    </div>
+                                ';
+
+                            }
+                            ?>
                         </div>
                     </div>
                     <?php

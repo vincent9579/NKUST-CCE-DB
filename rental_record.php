@@ -31,7 +31,7 @@ if (!isset($_SESSION['username'])) {
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 在這裡插入你的內容 -->
     <div class="flex items-center justify-center min-h-screen">
@@ -74,7 +74,7 @@ if (!isset($_SESSION['username'])) {
                     $rental_list = array();
                     for ($i = 1; $i <= $result->num_rows; $i++) {
                         $row = $result->fetch_assoc();
-                        if ($row['username'] != $_SESSION['username'] && !$is_admin) {
+                        if ($row['username'] != $_SESSION['username']) {
                             continue;
                         }
                         // 同create_time的資料合併

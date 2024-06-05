@@ -31,7 +31,7 @@ if (!isset($_SESSION['username'])) {
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 在這裡插入你的內容 -->
 
