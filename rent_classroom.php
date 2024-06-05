@@ -315,10 +315,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 url: "rent.php",
                 data: { data: JSON.stringify(data) },
                 success: function (response) {
-                    console.log(response);
+                    alert("Rent successfully!");
+                    window.location.href = "rental_record.php";
                 },
                 error: function (response) {
-                    console.log(response);
+                    alert("Failed to rent the classroom.");
                 }
             });
         }

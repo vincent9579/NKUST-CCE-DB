@@ -20,27 +20,97 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $start_period = $decodeData['start_period'];
     $end_period = $decodeData['end_period'];
     $reason = $decodeData['rent_reason'];
-    //get ID auto increment
-    $stmt = $conn->prepare("SELECT MAX(ID) FROM rental_table");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $rent_id = $row['MAX(ID)'] + 1;
 
     $conn->begin_transaction();
-    // Insert into rent_data
-    for ($i = $start_period; $i <= $end_period; $i++) {
-        $stmt = $conn->prepare("INSERT INTO rental_table (ID, username, classroom, rent_date, rent_period, reason) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $rent_id, $username, $classroom, $rent_date, $i, $reason);
-        $stmt->execute();
 
+    $A = "A";
+
+    if ($start_period == "A" && $end_period == "A") {
+        $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $username, $classroom, $rent_date, $start_period, $reason);
+        try {
+            $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                http_response_code(500);
+                echo json_encode(array("error" => "Duplicate entry"));
+                $conn->rollback();
+                exit();
+            } else {
+                throw $e; // rethrow the exception if it's not a duplicate entry error
+            }
+        }
+    } else {
+        if ($start_period == 4 && $end_period == 5) {
+
+            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
+            try {
+                $stmt->execute();
+            } catch (mysqli_sql_exception $e) {
+                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                    http_response_code(500);
+                    echo json_encode(array("error" => "Duplicate entry"));
+                    $conn->rollback();
+                    exit();
+                } else {
+                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                }
+            }
+        }
+        if ($end_period == "A") {
+            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $end_period, $reason);
+            try {
+                $stmt->execute();
+            } catch (mysqli_sql_exception $e) {
+                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                    http_response_code(500);
+                    echo json_encode(array("error" => "Duplicate entry"));
+                    $conn->rollback();
+                    exit();
+                } else {
+                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                }
+            }
+            $end_period = "4";
+        }
+        if ($start_period == "A") {
+            $stmt = $conn->prepare("INSERT INTO rental_table (,username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
+            try {
+                $stmt->execute();
+            } catch (mysqli_sql_exception $e) {
+                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                    http_response_code(500);
+                    echo json_encode(array("error" => "Duplicate entry"));
+                    $conn->rollback();
+                    exit();
+                } else {
+                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                }
+            }
+            $start_period = 5;
+        }
+        // Insert into rent_data
+        for ($i = $start_period; $i <= $end_period; $i++) {
+            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $i, $reason);
+            try {
+                $stmt->execute();
+            } catch (mysqli_sql_exception $e) {
+                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                    http_response_code(500);
+                    echo json_encode(array("error" => "Duplicate entry"));
+                    $conn->rollback();
+                    exit();
+                } else {
+                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                }
+            }
+        }
     }
     $conn->commit();
     $conn->close();
 }
-
-
-
-
-
 ?>

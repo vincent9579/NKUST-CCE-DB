@@ -40,6 +40,7 @@ if ($classroom) {
 // 獲取教室狀況
 $query = "SELECT * FROM course_table $where ORDER BY weekday, period";
 $stmt = $conn->prepare($query);
+$timeTable = [[], [], [], [], [], [], []];
 if ($stmt) {
     if ($params) {
         $types = str_repeat('s', count($params));
@@ -49,7 +50,7 @@ if ($stmt) {
     $result = $stmt->get_result();
     $stmt->close();
 
-    $timeTable = [[], [], [], [], [], [], []];
+
 
     // 將result
     while ($row = $result->fetch_assoc()) {
@@ -67,20 +68,85 @@ if ($stmt) {
         $period = $row['period'];
 
         // 1, 2, 3 ,4 ,A ,5 ,6 ,7 ,8 ,9 ,10, 11, 12, 13
-        if ($period < '5') {
-            // string to int
-            $period = (int) $period;
-            $timeTable[$weekday - 1][$period - 1] = $row;
-        }
         if ($period == 'A') {
             $timeTable[$weekday - 1][4] = $row;
-        }
-        if ($period >= '5') {
-            $period = (int) $period;
-            $timeTable[$weekday - 1][$period] = $row;
+        } else {
+            if ($period < '5') {
+                // string to int
+                $period = (int) $period;
+                $timeTable[$weekday - 1][$period - 1] = $row;
+            } else {
+                $period = (int) $period;
+                $timeTable[$weekday - 1][$period] = $row;
+            }
+
         }
     }
 }
+
+$query = "SELECT * FROM rental_table WHERE classroom = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('s', $classroom);
+$stmt->execute();
+
+$rental = $stmt->get_result();
+while ($row = $rental->fetch_assoc()) {
+    // 確認rent_date是否為未來日期
+    $today = date('Y-m-d');
+    if ($row['rent_date'] < $today) {
+        continue;
+    }
+    $rent_date = $row['rent_date'];
+    $period = $row['rent_period'];
+    $weekday = date('N', strtotime($row['rent_date']));
+
+    if ($period == 'A') {
+        // 判斷timeTable是否已經有值
+        if (isset($timeTable[$weekday - 1][4])) {
+            // 判斷instructor與username是否相同
+            if ($timeTable[$weekday - 1][4]['instructor'] != $row['username']) {
+                $timeTable[$weekday - 1][4]['instructor'] .= '、' . $row['username'];
+            }
+            $timeTable[$weekday - 1][4]['major'] .= ' ' . $rent_date;
+            continue;
+        }
+        $timeTable[$weekday - 1][4] = $row;
+        $timeTable[$weekday - 1][4]['course_name'] = "租借";
+        $timeTable[$weekday - 1][4]['instructor'] = $row['username'];
+        $timeTable[$weekday - 1][4]['major'] = $rent_date;
+    } else {
+        if ($period < '5') {
+            // string to int
+            $period = (int) $period;
+            if (isset($timeTable[$weekday - 1][$period - 1])) {
+                if ($timeTable[$weekday - 1][$period - 1]['instructor'] != $row['username']) {
+                    $timeTable[$weekday - 1][$period - 1]['instructor'] .= '、' . $row['username'];
+                }
+                $timeTable[$weekday - 1][$period - 1]['major'] .= ' ' . $rent_date;
+                continue;
+            }
+            $timeTable[$weekday - 1][$period - 1] = $row;
+            $timeTable[$weekday - 1][$period - 1]['course_name'] = "租借";
+            $timeTable[$weekday - 1][$period - 1]['instructor'] = $row['username'];
+            $timeTable[$weekday - 1][$period - 1]['major'] = $rent_date;
+        } else {
+            $period = (int) $period;
+            if (isset($timeTable[$weekday - 1][$period])) {
+                if ($timeTable[$weekday - 1][$period]['instructor'] != $row['username']) {
+                    $timeTable[$weekday - 1][$period]['instructor'] .= '、' . $row['username'];
+                }
+                $timeTable[$weekday - 1][$period]['major'] .= ' ' . $rent_date;
+                continue;
+            }
+            $timeTable[$weekday - 1][$period] = $row;
+            $timeTable[$weekday - 1][$period]['course_name'] = "租借";
+            $timeTable[$weekday - 1][$period]['instructor'] = $row['username'];
+            $timeTable[$weekday - 1][$period]['major'] = $rent_date;
+        }
+    }
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -350,6 +416,9 @@ if ($stmt) {
                 echo '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">';
                 if (isset($timeTable[$j][$i])) {
                     $row = $timeTable[$j][$i];
+                    if ($row['course_name'] == "租借") {
+                        echo '<input  id="checkbox_' . $j . '_' . $i . '" type="checkbox" name="checkbox[' . $j . '][' . $i . ']" value="' . $j . '_' . $i . '" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-' . $j . '" data-column="' . $j . '" data-row="' . $i . '" onclick="limitCheckbox(this, ' . $j . ', ' . $i . ')">';
+                    } 
                     echo $row['course_name'];
                     echo '<br>';
                     echo $row['instructor'];
@@ -389,7 +458,7 @@ if ($stmt) {
             checkboxes.forEach(function (checkbox) {
                 values.push(checkbox.value);
             });
-            
+
             if (values.length == 0) {
                 return false;
             } else {
@@ -442,32 +511,39 @@ if ($stmt) {
                             if (times[0] <= 4) {
                                 start_time = times[0];
                                 end_time = times[1];
-            
+
                             } else {
+
                                 start_time = times[1];
                                 end_time = times[0];
-            
+
                             }
 
-                        } else {
-                            if (times[1] <= 4) {
+                        }
+                        if (times.length == 3) {
+                            if (times[1] == 6) {
                                 // list [5,6,A] to A-6
-                                start_time = times[0];
-                                end_time = times[2];
-            
-                            } else {
-                                // list [4,5,A] to 4-A
                                 start_time = times[2];
                                 end_time = times[1];
+                            } else if (times[1] == 5) {
+                                // list [4,5,A] to 4-5
+                                start_time = times[0];
+                                end_time = times[1];
+                            }
+                            else {
+                                // list [3,4,A] to 3-A
+                                start_time = times[0];
+                                end_time = times[2];
                             }
                         }
+                    } else {
+                        // list [5,6,7] to 5-7
+                        start_time = times[0];
+                        end_time = times[times.length - 1];
                     }
-                    // list [5,6,7] to 5-7
-                    start_time = times[0];
-                    end_time = times[times.length - 1];
                 }
             }
-            
+
             var postData = {
                 weekday: weekdays[0],
                 start_time: start_time,
@@ -480,7 +556,6 @@ if ($stmt) {
                 type: 'POST',
                 data: postData,
                 success: function (response) {
-                    alert('租借成功');
                     // 將需要傳遞的數據設置到隱藏表單
                     $('#hiddenData').val(JSON.stringify(postData));
                     // 提交表單
@@ -488,7 +563,7 @@ if ($stmt) {
                 },
                 error: function (xhr, status, error) {
                     // 處理錯誤響應
-                    alert('租借失敗: ' + error);
+                    alert('跳轉失敗: ' + error);
                 }
             });
             return true;

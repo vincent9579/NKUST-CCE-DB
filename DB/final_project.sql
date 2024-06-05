@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-06-05 10:58:43
+-- 產生時間： 2024-06-05 15:04:09
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -9360,14 +9360,34 @@ INSERT INTO `nkust_course_table_cleaned` (`id`, `course_code`, `campus`, `depart
 --
 
 CREATE TABLE `rental_table` (
-  `ID` int(11) NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT current_timestamp(),
   `username` varchar(20) DEFAULT NULL,
   `classroom` varchar(20) NOT NULL DEFAULT '',
   `rent_date` date NOT NULL DEFAULT '1990-01-01',
-  `rent_period` int(11) NOT NULL DEFAULT 0,
+  `rent_period` varchar(2) NOT NULL DEFAULT '0',
   `reason` text DEFAULT NULL,
   `rent_status` enum('Y','N','U') DEFAULT 'U'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `rental_table`
+--
+
+INSERT INTO `rental_table` (`create_time`, `username`, `classroom`, `rent_date`, `rent_period`, `reason`, `rent_status`) VALUES
+('2024-06-05 19:58:01', 'c110110223', 'B342', '2024-06-08', 'A', '', 'U'),
+('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', '5', '', 'U'),
+('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', '6', '', 'U'),
+('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', 'A', '', 'U'),
+('2024-06-05 19:59:01', 'c110110223', 'B342', '2024-06-12', '5', '', 'U'),
+('2024-06-05 19:59:01', 'c110110223', 'B342', '2024-06-12', 'A', '', 'U'),
+('2024-06-05 19:58:37', 'c110110223', 'B345', '2024-06-09', '4', '', 'U'),
+('2024-06-05 19:58:37', 'c110110223', 'B345', '2024-06-09', 'A', '', 'U'),
+('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', '3', '', 'U'),
+('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', '4', '', 'U'),
+('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', 'A', '', 'U'),
+('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', '3', '', 'U'),
+('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', '4', '', 'U'),
+('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', 'A', '', 'U');
 
 -- --------------------------------------------------------
 
@@ -9491,7 +9511,7 @@ ALTER TABLE `nkust_course_table`
 -- 資料表索引 `rental_table`
 --
 ALTER TABLE `rental_table`
-  ADD PRIMARY KEY (`ID`,`classroom`,`rent_date`,`rent_period`) USING BTREE;
+  ADD PRIMARY KEY (`classroom`,`rent_date`,`rent_period`) USING BTREE;
 
 --
 -- 資料表索引 `staff_account`
@@ -9535,12 +9555,6 @@ ALTER TABLE `user_data`
 --
 ALTER TABLE `nkust_course_table`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2363;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `rental_table`
---
-ALTER TABLE `rental_table`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `user_data`
