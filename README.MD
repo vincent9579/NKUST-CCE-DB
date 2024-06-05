@@ -15,7 +15,21 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
 ## 建議
 - 一個功能開一個Branch
 - [遵循Commit守則](https://heidiliu2020.github.io/git-commit-message/)，可使用Add/Update(Edit)/Del表示檔案新增、刪除、修改
+
+## 帳號
+**管理員帳號** 
+admin:12345678
+
+**試用帳號**
+s0706131:12345678
+
+註冊還沒寫好關聯
+
 ## 說明
+**BUG**
+- 已知未登入帳戶無法租借
+- 租借還不用審核
+
 **已經做完的**
 - login.php + login.html
     登入介面，基本上已經做完了
@@ -25,10 +39,6 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
     首頁，看之後要放甚麼
 - config.php
     存放資料庫登入資訊的地方
-- register.php
-    註冊帳戶介面，要自己手動進去
-
-**還沒動工的**
 - classroom_status.php
     查詢教室當前狀況
 - rent_classroom.php
@@ -36,8 +46,14 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
 - rental_records.php
     租借紀錄
 
-**管理員帳號** 
-admin:12345678
+**還沒動工的**
+- register.php
+    還沒搞
+- admin_center.php
+    管理中心，也還沒搞
+
+**有空在做**
+- 前後端分離
 
 **資料庫**
 final_project 為主要的資料庫 另一個已經廢棄了
