@@ -1,71 +1,92 @@
+<?php
+if (!isset($_SESSION)) {
+    session_start();
+}
+if (!isset($_SESSION['username'])) {
+    $status = "invalid";
+} else {
+    $status = "valid";
+    $is_admin = $_SESSION['is_admin'];
+}
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <!-- 會員註冊 -->
-    <meta charset='utf-8'>
-    <title>會員註冊</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link href="css/web.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script>
-        function validateForm() {
-            var password = document.forms["registerForm"]["password"].value;
-            var passwordCheck = document.forms["registerForm"]["password_check"].value;
-            if (password.length < 6) {
-                alert("密碼長度不足，至少需要6個字符");
-                return false;
-            }
-            if (password !== passwordCheck) {
-                alert("請確認密碼是否輸入正確");
-                return false;
-            }
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
         }
     </script>
 </head>
-<body>
-    <h1>會員註冊</h1>
-    <form name="registerForm" method="post" action="register.php" onsubmit="return validateForm()">
-        帳號：<input type="text" name="username" required><br/><br/>
-        密碼：<input type="password" name="password" id="password" required><br/><br/>
-        確認密碼：<input type="password" name="password_check" id="password_check" required><br/><br/>
-        <input type="submit" value="註冊" name="submit">
-        <input type="reset" value="重設" name="reset">
-        <input type="button" onclick="location.href='index.php'" value="上一頁">
-    </form>
-    <?php 
-    session_start();
-    $conn = require_once("config.php");
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $username = $_POST["username"];
-        $password = $_POST["password"];
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT); // 密碼哈希處理
+<body class="bg-white dark:bg-gray-900">
+    <!-- navigation -->
+    <?php include './components/navigaion.php'; ?>
+    <div class="flex items-center justify-center h-screen">
+        <section class="bg-gray-50 dark:bg-gray-900">
+            <div class="flex-col px-8 py-8 mx-auto md:h-screen lg:py-0">
+                <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                            Create an account
+                        </h1>
+                        <form class="space-y-4 md:space-y-6" action="reg.php" method="POST">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="user_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                                    <input type="text" name="user_name" id="user_name" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="johndoe" required>
+                                </div>
+                                <div>
+                                    <label for="std_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name</label>
+                                    <input type="text" name="std_name" id="std_name" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="John Doe" required>
+                                </div>
+                                <div>
+                                    <label for="std_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Student ID</label>
+                                    <input type="text" name="std_id" id="std_id" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="201900000" required>
+                                </div>
+                                <div>
+                                    <label for="std_departments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Department</label>
+                                    <input type="text" name="std_departments" id="std_departments" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Computer Science" required>
+                                </div>
+                                <div>
+                                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                                    <input type="password" name="user_password" id="user_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+                                    <input type="password" name="confirm_password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="terms" aria-describedby="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required>
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="terms" class="font-light text-gray-500 dark:text-gray-300">I accept the <a class="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">Terms and Conditions</a></label>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create an account</button>
+                            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                                Already have an account? <a href="login.html" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-        $stmt = $conn->prepare("SELECT * FROM user_data WHERE user_name = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 0) {
-            $stmt = $conn->prepare("INSERT INTO user_data (user_name, user_password) VALUES (?, ?)");
-            $stmt->bind_param("ss", $username, $passwordHash);
-            if ($stmt->execute()) {
-                echo "<br><br>註冊成功! 3秒後將自動跳轉頁面<br>";
-                echo "<br><a href='index.php'>未成功跳轉頁面請點擊此</a>";
-                header("refresh:3;url=index.php");
-                exit;
-            } else {
-                echo "<br>資料庫錯誤: " . $conn->error;
-            }
-        } else {
-            echo "<br><br>該帳號已有人使用! 3秒後將自動跳轉頁面<br>";
-            echo "<br><a href='register.php'>未成功跳轉頁面請點擊此</a>";
-            header("refresh:3;url=register.php");
-            exit;
-        }
-        $stmt->close();
-    }
-
-    $conn->close();
-    ?>
+    <script src="./static/js/theme-toggle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
+
 </html>
