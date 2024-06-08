@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $A = "A";
 
-    if ($start_period == "A" && $end_period == "A") {
+    if (($start_period == "A") && ($end_period == "A")) {
         $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $username, $classroom, $rent_date, $start_period, $reason);
+        $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
         try {
             $stmt->execute();
         } catch (mysqli_sql_exception $e) {
