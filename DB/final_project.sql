@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-06-05 15:04:09
+-- 產生時間： 2024-06-08 09:13:04
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -31,14 +31,14 @@ CREATE TABLE `classroom_table` (
   `classroom` varchar(10) NOT NULL DEFAULT '0',
   `colleage` varchar(50) NOT NULL DEFAULT '',
   `max_capacity` int(10) NOT NULL DEFAULT 0,
-  `is_reeldata` enum('Y','N') NOT NULL DEFAULT 'N'
+  `is_realdata` enum('Y','N') NOT NULL DEFAULT 'N'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- 傾印資料表的資料 `classroom_table`
 --
 
-INSERT INTO `classroom_table` (`classroom`, `colleage`, `max_capacity`, `is_reeldata`) VALUES
+INSERT INTO `classroom_table` (`classroom`, `colleage`, `max_capacity`, `is_realdata`) VALUES
 ('B113', '電資學院', 45, 'Y'),
 ('B115', '電資學院', 45, 'Y'),
 ('B116', '電資學院', 50, 'Y'),
@@ -9360,11 +9360,11 @@ INSERT INTO `nkust_course_table_cleaned` (`id`, `course_code`, `campus`, `depart
 --
 
 CREATE TABLE `rental_table` (
-  `create_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `create_time` datetime NOT NULL DEFAULT curtime(),
   `username` varchar(20) DEFAULT NULL,
   `classroom` varchar(20) NOT NULL DEFAULT '',
   `rent_date` date NOT NULL DEFAULT '1990-01-01',
-  `rent_period` varchar(2) NOT NULL DEFAULT '0',
+  `rent_period` varchar(10) NOT NULL DEFAULT '0',
   `reason` text DEFAULT NULL,
   `rent_status` enum('Y','N','U') DEFAULT 'U'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -9374,20 +9374,13 @@ CREATE TABLE `rental_table` (
 --
 
 INSERT INTO `rental_table` (`create_time`, `username`, `classroom`, `rent_date`, `rent_period`, `reason`, `rent_status`) VALUES
-('2024-06-05 19:58:01', 'c110110223', 'B342', '2024-06-08', 'A', '', 'U'),
-('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', '5', '', 'U'),
-('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', '6', '', 'U'),
-('2024-06-05 19:59:25', 'c110110223', 'B342', '2024-06-10', 'A', '', 'U'),
-('2024-06-05 19:59:01', 'c110110223', 'B342', '2024-06-12', '5', '', 'U'),
-('2024-06-05 19:59:01', 'c110110223', 'B342', '2024-06-12', 'A', '', 'U'),
-('2024-06-05 19:58:37', 'c110110223', 'B345', '2024-06-09', '4', '', 'U'),
-('2024-06-05 19:58:37', 'c110110223', 'B345', '2024-06-09', 'A', '', 'U'),
-('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', '3', '', 'U'),
-('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', '4', '', 'U'),
-('2024-06-05 19:59:42', 'c110110223', 'B345', '2024-06-11', 'A', '', 'U'),
-('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', '3', '', 'U'),
-('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', '4', '', 'U'),
-('2024-06-05 20:55:56', 'c110110223', 'B345', '2024-06-18', 'A', '', 'U');
+('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', '4', '', 'U'),
+('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', '5', '', 'U'),
+('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', 'A', '', 'U'),
+('2024-06-08 14:49:44', 'c110110223', 'B345', '2024-06-09', '4', '', 'U'),
+('2024-06-08 14:49:44', 'c110110223', 'B345', '2024-06-09', 'A', '', 'U'),
+('2024-06-08 14:47:31', 'c110110223', 'B345', '2024-06-15', '5', '', 'U'),
+('2024-06-08 14:47:31', 'c110110223', 'B345', '2024-06-15', 'A', '', 'U');
 
 -- --------------------------------------------------------
 
@@ -9405,7 +9398,243 @@ CREATE TABLE `staff_account` (
 --
 
 INSERT INTO `staff_account` (`user_id`, `staff_id`) VALUES
-(1, 'S1001');
+(5, 'S1001'),
+(6, 'S1002'),
+(7, 'S1003'),
+(8, 'S1004'),
+(9, 'S1005'),
+(10, 'S1006'),
+(11, 'S1007'),
+(12, 'S1008'),
+(13, 'S1009'),
+(14, 'S1010'),
+(15, 'S1011'),
+(1, 'S1100');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `staff_classroom`
+--
+
+CREATE TABLE `staff_classroom` (
+  `staff_id` varchar(10) DEFAULT NULL,
+  `classroom_id` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `staff_classroom`
+--
+
+INSERT INTO `staff_classroom` (`staff_id`, `classroom_id`) VALUES
+('S1001', 'B113'),
+('S1001', 'B115'),
+('S1001', 'B116'),
+('S1001', 'B118'),
+('S1001', 'B119'),
+('S1001', 'B120'),
+('S1001', 'B121'),
+('S1001', 'B122'),
+('S1001', 'B123'),
+('S1001', 'B124'),
+('S1001', 'B125'),
+('S1001', 'B201'),
+('S1001', 'B211'),
+('S1001', 'B222'),
+('S1001', 'B225'),
+('S1001', 'B229'),
+('S1001', 'B323'),
+('S1001', 'B337'),
+('S1001', 'B339'),
+('S1001', 'B342'),
+('S1001', 'B344'),
+('S1001', 'B345'),
+('S1001', 'B442'),
+('S1001', 'B443'),
+('S1001', 'B444'),
+('S1001', 'B445'),
+('S1001', 'B501'),
+('S1001', 'B504'),
+('S1001', 'B506'),
+('S1001', 'B508'),
+('S1002', 'C103'),
+('S1002', 'C104'),
+('S1002', 'C116'),
+('S1002', 'C117'),
+('S1002', 'C120'),
+('S1002', 'C123'),
+('S1002', 'C124'),
+('S1002', 'C125'),
+('S1002', 'C203'),
+('S1002', 'C204'),
+('S1002', 'C218'),
+('S1002', 'C219'),
+('S1002', 'C220'),
+('S1002', 'C222'),
+('S1002', 'C333'),
+('S1002', 'C338'),
+('S1002', 'C340'),
+('S1002', 'C345'),
+('S1002', 'C356'),
+('S1002', 'C359'),
+('S1002', 'C363'),
+('S1002', 'C433'),
+('S1002', 'C434'),
+('S1002', 'C442'),
+('S1002', 'C443'),
+('S1002', 'C444'),
+('S1002', 'C445'),
+('S1002', 'C446'),
+('S1002', 'C448'),
+('S1003', 'D009'),
+('S1003', 'D101'),
+('S1003', 'D102'),
+('S1003', 'D103'),
+('S1003', 'D104'),
+('S1003', 'D105'),
+('S1003', 'D106'),
+('S1003', 'D107'),
+('S1003', 'D108'),
+('S1003', 'D109'),
+('S1003', 'D110'),
+('S1003', 'D111'),
+('S1003', 'D201'),
+('S1003', 'D202'),
+('S1003', 'D203'),
+('S1003', 'D204'),
+('S1003', 'D205'),
+('S1003', 'D206'),
+('S1003', 'D208'),
+('S1003', 'D209'),
+('S1003', 'D301'),
+('S1003', 'D302'),
+('S1003', 'D308'),
+('S1003', 'D414'),
+('S1003', 'D415'),
+('S1003', 'D416'),
+('S1003', 'D417'),
+('S1003', 'D418'),
+('S1003', 'D516'),
+('S1003', 'D517'),
+('S1004', 'E001'),
+('S1004', 'E002'),
+('S1004', 'E003'),
+('S1004', 'E004'),
+('S1004', 'E005'),
+('S1004', 'E006'),
+('S1004', 'E007'),
+('S1004', 'E008'),
+('S1004', 'E009'),
+('S1004', 'E010'),
+('S1004', 'E011'),
+('S1004', 'E012'),
+('S1004', 'E013'),
+('S1004', 'E014'),
+('S1004', 'E015'),
+('S1004', 'E016'),
+('S1004', 'E101'),
+('S1004', 'E102'),
+('S1004', 'E103'),
+('S1004', 'E104'),
+('S1004', 'E105'),
+('S1004', 'E106'),
+('S1004', 'E107'),
+('S1004', 'E108'),
+('S1004', 'E109'),
+('S1004', 'E110'),
+('S1004', 'E113'),
+('S1004', 'E115'),
+('S1004', 'E116'),
+('S1004', 'E117'),
+('S1004', 'E118'),
+('S1004', 'E119'),
+('S1004', 'E120'),
+('S1004', 'E201'),
+('S1004', 'E202'),
+('S1004', 'E203'),
+('S1004', 'E204'),
+('S1004', 'E205'),
+('S1004', 'E206'),
+('S1004', 'E207'),
+('S1004', 'E209'),
+('S1004', 'E210'),
+('S1004', 'E211'),
+('S1004', 'E212'),
+('S1004', 'E213'),
+('S1004', 'E214'),
+('S1004', 'E216'),
+('S1004', 'E217'),
+('S1004', 'E220'),
+('S1004', 'E301'),
+('S1004', 'E302'),
+('S1004', 'E303'),
+('S1004', 'E304'),
+('S1004', 'E305'),
+('S1004', 'E306'),
+('S1004', 'E307'),
+('S1004', 'E308'),
+('S1004', 'E309'),
+('S1004', 'E310'),
+('S1004', 'E311'),
+('S1004', 'E312'),
+('S1004', 'E313'),
+('S1004', 'E314'),
+('S1004', 'E315'),
+('S1004', 'E317'),
+('S1004', 'E318'),
+('S1004', 'E319'),
+('S1004', 'E403'),
+('S1004', 'E416'),
+('S1004', 'E419'),
+('S1004', 'E420'),
+('S1004', 'E421'),
+('S1004', 'E422'),
+('S1004', 'E423'),
+('S1004', 'E424'),
+('S1004', 'E514'),
+('S1004', 'E522'),
+('S1004', 'E525'),
+('S1004', 'E534'),
+('S1005', 'F106'),
+('S1005', 'F107'),
+('S1005', 'F108'),
+('S1005', 'F109'),
+('S1005', 'F124'),
+('S1005', 'F126'),
+('S1005', 'F128'),
+('S1005', 'F129'),
+('S1005', 'F131'),
+('S1005', 'F146'),
+('S1005', 'F147'),
+('S1005', 'F151'),
+('S1005', 'F208'),
+('S1005', 'F209'),
+('S1005', 'F223'),
+('S1005', 'F224'),
+('S1005', 'F225'),
+('S1005', 'F410'),
+('S1005', 'F452'),
+('S1005', 'F455'),
+('S1005', 'F456'),
+('S1005', 'F553'),
+('S1005', 'F554'),
+('S1006', 'H303'),
+('S1007', 'J001'),
+('S1007', 'J009'),
+('S1007', 'J124'),
+('S1008', 'P102'),
+('S1008', 'P202'),
+('S1008', 'P302'),
+('S1009', 'S109'),
+('S1009', 'S202'),
+('S1009', 'S204'),
+('S1009', 'S210'),
+('S1009', 'S211'),
+('S1010', 'T210'),
+('S1010', 'T212'),
+('S1011', 'V101'),
+('S1011', 'V106'),
+('S1100', NULL);
 
 -- --------------------------------------------------------
 
@@ -9425,7 +9654,18 @@ CREATE TABLE `staff_table` (
 --
 
 INSERT INTO `staff_table` (`staff_id`, `staff_name`, `staff_room`, `staff_department`) VALUES
-('S1001', '王大明', 'F332', '電腦與通訊工程系');
+('S1001', '王大明', 'B215', '電資學院'),
+('S1002', '王一明', 'C215', '管理學院'),
+('S1003', '王二明', 'D215', '外語學院'),
+('S1004', '王三明', 'E215', '財金學院'),
+('S1005', '王四明', 'F215', '工學院'),
+('S1006', '王五明', 'H215', '產業創新園區'),
+('S1007', '王六明', 'J215', '圖書資訊大樓'),
+('S1008', '王七明', 'P215', '智慧防災實作工廠'),
+('S1009', '王八明', 'S215', '跨領域實作工廠'),
+('S1010', '王九明', 'T215', '智慧製造實作工廠'),
+('S1011', '王十明', 'V215', '實作工廠'),
+('S1100', '管理員', 'ALL', 'ALL');
 
 -- --------------------------------------------------------
 
@@ -9443,7 +9683,8 @@ CREATE TABLE `student_account` (
 --
 
 INSERT INTO `student_account` (`user_id`, `std_id`) VALUES
-(3, 'C110110223');
+(3, 'C110110223'),
+(4, 'C110110232');
 
 -- --------------------------------------------------------
 
@@ -9462,7 +9703,8 @@ CREATE TABLE `student_table` (
 --
 
 INSERT INTO `student_table` (`std_id`, `std_name`, `std_departments`) VALUES
-('C110110223', '劉易蒼', '電腦與通訊工程系');
+('C110110223', '劉易蒼', '電腦與通訊工程系'),
+('C110110232', '林志翰', '電腦與通訊工程系');
 
 -- --------------------------------------------------------
 
@@ -9483,7 +9725,19 @@ CREATE TABLE `user_data` (
 
 INSERT INTO `user_data` (`user_id`, `user_name`, `user_password`, `is_admin`) VALUES
 (1, 'admin', '$2y$10$3bp0IHVwEYgPYKd3VQ54lOzAkzXoIe.VtdeLDwb2cuXRQgyDO1WZC', 'Y'),
-(3, 'c110110223', '$2y$10$GUKluAKogR35PVLl53P8OOLZJ1hVn51kqumZnPks6yDOWuqQfybdW', 'N');
+(3, 'c110110223', '$2y$10$GUKluAKogR35PVLl53P8OOLZJ1hVn51kqumZnPks6yDOWuqQfybdW', 'N'),
+(4, 'Nathan', '$2y$10$PQneP6LG3XTLZ2AnPzf5xeoaPdmAMHIsYF67YrYUBFLxBwuy3GXya', 'N'),
+(5, 'admin1', '$2y$10$1WoQXMRBr7J3khT/ZAlQVeOnYixUKnyCrE/8RPhUMyFHczVLsQFvi', 'Y'),
+(6, 'admin2', '$2y$10$.1j7CLTgfwTTiOYz2ZH4iONz6riX9LWPqhs9vWUI0XxWWAJipIdMq', 'Y'),
+(7, 'admin3', '$2y$10$7i8WZmlCrNi4w1fnGcZHOugYzDWpWAV.s1ab5PU46qULIgsyR6Txu', 'Y'),
+(8, 'admin4', '$2y$10$rnVSZGM/yPHOhbCJ9Mzlg.RT1BG.zH6wgSm5WcSanH2wvOV24HRO2', 'Y'),
+(9, 'admin5', '$2y$10$n3bFVJTVGXyLxqNRHMN1Be1lWsqE7o.snIBDlgNt7/4zHdEJajGuO', 'Y'),
+(10, 'admin6', '$2y$10$RK21.i9zHB18teyuxi5D0uOcV30BAetGMjcAejSLlIB49kwM4BDFq', 'Y'),
+(11, 'admin7', '$2y$10$GTj3K8q6.6ysekpxz3th5eozxQQOkoge5Jt5A1Y6RDuue.YboVecK', 'Y'),
+(12, 'admin8', '$2y$10$Pu7qtCiQbBNazrrDPjY2oOfZHErIiW4eygTnIsP4lCks/KejR3MEy', 'Y'),
+(13, 'admin9', '$2y$10$W94BgZLs.xdalsIZ6v7kkeSSxOMn8S.ooZ9ed8Koe2vAW47fXZgCq', 'Y'),
+(14, 'admin10', '$2y$10$08EfdcGFiKLS/JhZ.VxfMOn6e.CVehVxnZMG5PpqyoZldJ3Ma3RWC', 'Y'),
+(15, 'admin11', '$2y$10$4HxDlELc7BpXstJhKSq4aeqk6L7SdnRaQ1K387xUV0mfHifkL8Ali', 'Y');
 
 --
 -- 已傾印資料表的索引
@@ -9519,6 +9773,13 @@ ALTER TABLE `rental_table`
 ALTER TABLE `staff_account`
   ADD KEY `staff_ac_id` (`user_id`),
   ADD KEY `staff_id` (`staff_id`);
+
+--
+-- 資料表索引 `staff_classroom`
+--
+ALTER TABLE `staff_classroom`
+  ADD KEY `FK_staff_id` (`staff_id`) USING BTREE,
+  ADD KEY `FK_classroom_id` (`classroom_id`) USING BTREE;
 
 --
 -- 資料表索引 `staff_table`
@@ -9560,7 +9821,7 @@ ALTER TABLE `nkust_course_table`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `user_data`
 --
 ALTER TABLE `user_data`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- 已傾印資料表的限制式
@@ -9570,15 +9831,22 @@ ALTER TABLE `user_data`
 -- 資料表的限制式 `staff_account`
 --
 ALTER TABLE `staff_account`
-  ADD CONSTRAINT `staff_ac_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `staff_id` FOREIGN KEY (`staff_id`) REFERENCES `staff_table` (`staff_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `staff_ac_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`),
+  ADD CONSTRAINT `staff_id` FOREIGN KEY (`staff_id`) REFERENCES `staff_table` (`staff_id`);
+
+--
+-- 資料表的限制式 `staff_classroom`
+--
+ALTER TABLE `staff_classroom`
+  ADD CONSTRAINT `FK_classroom_id` FOREIGN KEY (`classroom_id`) REFERENCES `classroom_table` (`classroom`),
+  ADD CONSTRAINT `FK_staff_id` FOREIGN KEY (`staff_id`) REFERENCES `staff_table` (`staff_id`);
 
 --
 -- 資料表的限制式 `student_account`
 --
 ALTER TABLE `student_account`
-  ADD CONSTRAINT `std_id` FOREIGN KEY (`std_id`) REFERENCES `student_table` (`std_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `std_user_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `std_id` FOREIGN KEY (`std_id`) REFERENCES `student_table` (`std_id`),
+  ADD CONSTRAINT `std_user_id` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
