@@ -111,6 +111,7 @@ if (!isset($_SESSION['username'])) {
                         echo "<td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>";
                         echo "</tr>";
                     } else {
+                        sort($rental_list);
                         $j = 1;
                         foreach ($rental_list as $rental) {
                             echo "<tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>";
