@@ -1,21 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.1
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
-<<<<<<< HEAD
 -- 主機： 127.0.0.1
--- 產生時間： 2024-06-08 09:13:04
+-- 產生時間： 2024-06-08 09:17:04
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
-=======
--- 主機： localhost
--- 產生時間： 
--- 伺服器版本： 8.0.17
--- PHP 版本： 7.3.10
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -36,17 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `classroom_table` (
-<<<<<<< HEAD
   `classroom` varchar(10) NOT NULL DEFAULT '0',
   `colleage` varchar(50) NOT NULL DEFAULT '',
   `max_capacity` int(10) NOT NULL DEFAULT 0,
   `is_realdata` enum('Y','N') NOT NULL DEFAULT 'N'
-=======
-  `classroom` varchar(10) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0',
-  `colleage` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `max_capacity` int(10) NOT NULL DEFAULT '0',
-  `is_realdata` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N'
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -269,13 +254,13 @@ INSERT INTO `classroom_table` (`classroom`, `colleage`, `max_capacity`, `is_real
 --
 
 CREATE TABLE `course_table` (
-  `course_code` varchar(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `major` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `course_name` text COLLATE utf8mb4_general_ci,
-  `instructor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `weekday` varchar(4) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `period` int(11) NOT NULL DEFAULT '0'
+  `course_code` varchar(20) NOT NULL DEFAULT '',
+  `major` varchar(50) DEFAULT NULL,
+  `course_name` text DEFAULT NULL,
+  `instructor` varchar(50) DEFAULT NULL,
+  `classroom` varchar(50) NOT NULL DEFAULT '',
+  `weekday` varchar(4) NOT NULL DEFAULT '',
+  `period` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
@@ -3563,12 +3548,12 @@ INSERT INTO `course_table` (`course_code`, `major`, `course_name`, `instructor`,
 --
 
 CREATE TABLE `course_table_old` (
-  `course_code` varchar(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `major` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `course_name` text COLLATE utf8mb4_general_ci,
-  `instructor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `class_time` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''
+  `course_code` varchar(20) NOT NULL DEFAULT '',
+  `major` varchar(50) DEFAULT NULL,
+  `course_name` text DEFAULT NULL,
+  `instructor` varchar(50) DEFAULT NULL,
+  `classroom` varchar(50) NOT NULL DEFAULT '',
+  `class_time` varchar(50) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
@@ -4903,27 +4888,27 @@ INSERT INTO `course_table_old` (`course_code`, `major`, `course_name`, `instruct
 
 CREATE TABLE `nkust_course_table` (
   `id` int(11) NOT NULL,
-  `course_code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `campus` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `department` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `major` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `class` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `combined_class` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `permanent_course_code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `course_name` text COLLATE utf8mb4_general_ci,
+  `course_code` varchar(20) DEFAULT NULL,
+  `campus` varchar(50) DEFAULT NULL,
+  `department` varchar(50) DEFAULT NULL,
+  `major` varchar(50) DEFAULT NULL,
+  `class` varchar(50) DEFAULT NULL,
+  `combined_class` varchar(50) DEFAULT NULL,
+  `permanent_course_code` varchar(20) DEFAULT NULL,
+  `course_name` text DEFAULT NULL,
   `credits` float DEFAULT NULL,
   `teaching_hours` float DEFAULT NULL,
   `practice_hours` int(11) DEFAULT NULL,
-  `required_or_elective` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `instructor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom` text COLLATE utf8mb4_general_ci,
+  `required_or_elective` varchar(10) DEFAULT NULL,
+  `instructor` varchar(50) DEFAULT NULL,
+  `classroom` text DEFAULT NULL,
   `enrolled_students` int(11) DEFAULT NULL,
   `max_students` int(11) DEFAULT NULL,
-  `class_time` text COLLATE utf8mb4_general_ci,
-  `full_english_teaching` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `distance_learning` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `syllabus` text COLLATE utf8mb4_general_ci,
-  `remarks` text COLLATE utf8mb4_general_ci
+  `class_time` text DEFAULT NULL,
+  `full_english_teaching` varchar(10) DEFAULT NULL,
+  `distance_learning` varchar(10) DEFAULT NULL,
+  `syllabus` text DEFAULT NULL,
+  `remarks` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -7309,27 +7294,27 @@ INSERT INTO `nkust_course_table` (`id`, `course_code`, `campus`, `department`, `
 
 CREATE TABLE `nkust_course_table_cleaned` (
   `id` int(11) NOT NULL,
-  `course_code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `campus` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `department` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `major` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `class` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `combined_class` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `permanent_course_code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `course_name` text COLLATE utf8mb4_general_ci,
+  `course_code` varchar(20) DEFAULT NULL,
+  `campus` varchar(50) DEFAULT NULL,
+  `department` varchar(50) DEFAULT NULL,
+  `major` varchar(50) DEFAULT NULL,
+  `class` varchar(50) DEFAULT NULL,
+  `combined_class` varchar(50) DEFAULT NULL,
+  `permanent_course_code` varchar(20) DEFAULT NULL,
+  `course_name` text DEFAULT NULL,
   `credits` float DEFAULT NULL,
   `teaching_hours` float DEFAULT NULL,
   `practice_hours` int(11) DEFAULT NULL,
-  `required_or_elective` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `instructor` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom` text COLLATE utf8mb4_general_ci,
+  `required_or_elective` varchar(10) DEFAULT NULL,
+  `instructor` varchar(50) DEFAULT NULL,
+  `classroom` text DEFAULT NULL,
   `enrolled_students` int(11) DEFAULT NULL,
   `max_students` int(11) DEFAULT NULL,
-  `class_time` text COLLATE utf8mb4_general_ci,
-  `full_english_teaching` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `distance_learning` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `syllabus` text COLLATE utf8mb4_general_ci,
-  `remarks` text COLLATE utf8mb4_general_ci
+  `class_time` text DEFAULT NULL,
+  `full_english_teaching` varchar(10) DEFAULT NULL,
+  `distance_learning` varchar(10) DEFAULT NULL,
+  `syllabus` text DEFAULT NULL,
+  `remarks` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9375,7 +9360,6 @@ INSERT INTO `nkust_course_table_cleaned` (`id`, `course_code`, `campus`, `depart
 --
 
 CREATE TABLE `rental_table` (
-<<<<<<< HEAD
   `create_time` datetime NOT NULL DEFAULT curtime(),
   `username` varchar(20) DEFAULT NULL,
   `classroom` varchar(20) NOT NULL DEFAULT '',
@@ -9383,15 +9367,6 @@ CREATE TABLE `rental_table` (
   `rent_period` varchar(10) NOT NULL DEFAULT '0',
   `reason` text DEFAULT NULL,
   `rent_status` enum('Y','N','U') DEFAULT 'U'
-=======
-  `create_time` datetime NOT NULL DEFAULT (curtime()),
-  `username` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom` varchar(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `rent_date` date NOT NULL DEFAULT '1990-01-01',
-  `rent_period` int(11) NOT NULL DEFAULT '0',
-  `reason` text COLLATE utf8mb4_general_ci,
-  `rent_status` enum('Y','N','U') COLLATE utf8mb4_general_ci DEFAULT 'U'
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9399,7 +9374,6 @@ CREATE TABLE `rental_table` (
 --
 
 INSERT INTO `rental_table` (`create_time`, `username`, `classroom`, `rent_date`, `rent_period`, `reason`, `rent_status`) VALUES
-<<<<<<< HEAD
 ('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', '4', '', 'U'),
 ('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', '5', '', 'U'),
 ('2024-06-08 14:50:11', 'c110110223', 'B342', '2024-06-15', 'A', '', 'U'),
@@ -9407,10 +9381,6 @@ INSERT INTO `rental_table` (`create_time`, `username`, `classroom`, `rent_date`,
 ('2024-06-08 14:49:44', 'c110110223', 'B345', '2024-06-09', 'A', '', 'U'),
 ('2024-06-08 14:47:31', 'c110110223', 'B345', '2024-06-15', '5', '', 'U'),
 ('2024-06-08 14:47:31', 'c110110223', 'B345', '2024-06-15', 'A', '', 'U');
-=======
-('2024-06-05 22:24:51', 'Nathan', 'b345', '2024-06-11', 1, '', 'U'),
-('2024-06-05 22:24:51', 'Nathan', 'b345', '2024-06-11', 2, '', 'U');
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 
 -- --------------------------------------------------------
 
@@ -9420,7 +9390,7 @@ INSERT INTO `rental_table` (`create_time`, `username`, `classroom`, `rent_date`,
 
 CREATE TABLE `staff_account` (
   `user_id` int(11) DEFAULT NULL,
-  `staff_id` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `staff_id` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9448,13 +9418,8 @@ INSERT INTO `staff_account` (`user_id`, `staff_id`) VALUES
 --
 
 CREATE TABLE `staff_classroom` (
-<<<<<<< HEAD
   `staff_id` varchar(10) DEFAULT NULL,
   `classroom_id` varchar(50) DEFAULT NULL
-=======
-  `staff_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `classroom_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9462,7 +9427,6 @@ CREATE TABLE `staff_classroom` (
 --
 
 INSERT INTO `staff_classroom` (`staff_id`, `classroom_id`) VALUES
-<<<<<<< HEAD
 ('S1001', 'B113'),
 ('S1001', 'B115'),
 ('S1001', 'B116'),
@@ -9670,215 +9634,6 @@ INSERT INTO `staff_classroom` (`staff_id`, `classroom_id`) VALUES
 ('S1010', 'T212'),
 ('S1011', 'V101'),
 ('S1011', 'V106'),
-=======
-('S1001','B113'),
-('S1001','B115'),
-('S1001','B116'),
-('S1001','B118'),
-('S1001','B119'),
-('S1001','B120'),
-('S1001','B121'),
-('S1001','B122'),
-('S1001','B123'),
-('S1001','B124'),
-('S1001','B125'),
-('S1001','B201'),
-('S1001','B211'),
-('S1001','B222'),
-('S1001','B225'),
-('S1001','B229'),
-('S1001','B323'),
-('S1001','B337'),
-('S1001','B339'),
-('S1001','B342'),
-('S1001','B344'),
-('S1001','B345'),
-('S1001','B442'),
-('S1001','B443'),
-('S1001','B444'),
-('S1001','B445'),
-('S1001','B501'),
-('S1001','B504'),
-('S1001','B506'),
-('S1001','B508'),
-('S1002','C103'),
-('S1002','C104'),
-('S1002','C116'),
-('S1002','C117'),
-('S1002','C120'),
-('S1002','C123'),
-('S1002','C124'),
-('S1002','C125'),
-('S1002','C203'),
-('S1002','C204'),
-('S1002','C218'),
-('S1002','C219'),
-('S1002','C220'),
-('S1002','C222'),
-('S1002','C333'),
-('S1002','C338'),
-('S1002','C340'),
-('S1002','C345'),
-('S1002','C356'),
-('S1002','C359'),
-('S1002','C363'),
-('S1002','C433'),
-('S1002','C434'),
-('S1002','C442'),
-('S1002','C443'),
-('S1002','C444'),
-('S1002','C445'),
-('S1002','C446'),
-('S1002','C448'),
-('S1003','D009'),
-('S1003','D101'),
-('S1003','D102'),
-('S1003','D103'),
-('S1003','D104'),
-('S1003','D105'),
-('S1003','D106'),
-('S1003','D107'),
-('S1003','D108'),
-('S1003','D109'),
-('S1003','D110'),
-('S1003','D111'),
-('S1003','D201'),
-('S1003','D202'),
-('S1003','D203'),
-('S1003','D204'),
-('S1003','D205'),
-('S1003','D206'),
-('S1003','D208'),
-('S1003','D209'),
-('S1003','D301'),
-('S1003','D302'),
-('S1003','D308'),
-('S1003','D414'),
-('S1003','D415'),
-('S1003','D416'),
-('S1003','D417'),
-('S1003','D418'),
-('S1003','D516'),
-('S1003','D517'),
-('S1004','E001'),
-('S1004','E002'),
-('S1004','E003'),
-('S1004','E004'),
-('S1004','E005'),
-('S1004','E006'),
-('S1004','E007'),
-('S1004','E008'),
-('S1004','E009'),
-('S1004','E010'),
-('S1004','E011'),
-('S1004','E012'),
-('S1004','E013'),
-('S1004','E014'),
-('S1004','E015'),
-('S1004','E016'),
-('S1004','E101'),
-('S1004','E102'),
-('S1004','E103'),
-('S1004','E104'),
-('S1004','E105'),
-('S1004','E106'),
-('S1004','E107'),
-('S1004','E108'),
-('S1004','E109'),
-('S1004','E110'),
-('S1004','E113'),
-('S1004','E115'),
-('S1004','E116'),
-('S1004','E117'),
-('S1004','E118'),
-('S1004','E119'),
-('S1004','E120'),
-('S1004','E201'),
-('S1004','E202'),
-('S1004','E203'),
-('S1004','E204'),
-('S1004','E205'),
-('S1004','E206'),
-('S1004','E207'),
-('S1004','E209'),
-('S1004','E210'),
-('S1004','E211'),
-('S1004','E212'),
-('S1004','E213'),
-('S1004','E214'),
-('S1004','E216'),
-('S1004','E217'),
-('S1004','E220'),
-('S1004','E301'),
-('S1004','E302'),
-('S1004','E303'),
-('S1004','E304'),
-('S1004','E305'),
-('S1004','E306'),
-('S1004','E307'),
-('S1004','E308'),
-('S1004','E309'),
-('S1004','E310'),
-('S1004','E311'),
-('S1004','E312'),
-('S1004','E313'),
-('S1004','E314'),
-('S1004','E315'),
-('S1004','E317'),
-('S1004','E318'),
-('S1004','E319'),
-('S1004','E403'),
-('S1004','E416'),
-('S1004','E419'),
-('S1004','E420'),
-('S1004','E421'),
-('S1004','E422'),
-('S1004','E423'),
-('S1004','E424'),
-('S1004','E514'),
-('S1004','E522'),
-('S1004','E525'),
-('S1004','E534'),
-('S1005','F106'),
-('S1005','F107'),
-('S1005','F108'),
-('S1005','F109'),
-('S1005','F124'),
-('S1005','F126'),
-('S1005','F128'),
-('S1005','F129'),
-('S1005','F131'),
-('S1005','F146'),
-('S1005','F147'),
-('S1005','F151'),
-('S1005','F208'),
-('S1005','F209'),
-('S1005','F223'),
-('S1005','F224'),
-('S1005','F225'),
-('S1005','F410'),
-('S1005','F452'),
-('S1005','F455'),
-('S1005','F456'),
-('S1005','F553'),
-('S1005','F554'),
-('S1006','H303'),
-('S1007','J001'),
-('S1007','J009'),
-('S1007','J124'),
-('S1008','P102'),
-('S1008','P202'),
-('S1008','P302'),
-('S1009','S109'),
-('S1009','S202'),
-('S1009','S204'),
-('S1009','S210'),
-('S1009','S211'),
-('S1010','T210'),
-('S1010','T212'),
-('S1011','V101'),
-('S1011','V106'),
->>>>>>> 66e533837f943be15750a25fb26a842ec37e63ea
 ('S1100', NULL);
 
 -- --------------------------------------------------------
@@ -9888,10 +9643,10 @@ INSERT INTO `staff_classroom` (`staff_id`, `classroom_id`) VALUES
 --
 
 CREATE TABLE `staff_table` (
-  `staff_id` varchar(10) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `staff_name` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `staff_room` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `staff_department` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `staff_id` varchar(10) NOT NULL DEFAULT '',
+  `staff_name` varchar(10) DEFAULT NULL,
+  `staff_room` varchar(10) DEFAULT NULL,
+  `staff_department` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9920,7 +9675,7 @@ INSERT INTO `staff_table` (`staff_id`, `staff_name`, `staff_room`, `staff_depart
 
 CREATE TABLE `student_account` (
   `user_id` int(11) DEFAULT NULL,
-  `std_id` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `std_id` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9938,9 +9693,9 @@ INSERT INTO `student_account` (`user_id`, `std_id`) VALUES
 --
 
 CREATE TABLE `student_table` (
-  `std_id` varchar(10) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `std_name` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `std_departments` varchar(30) COLLATE utf8mb4_general_ci NOT NULL
+  `std_id` varchar(10) NOT NULL DEFAULT '',
+  `std_name` varchar(10) NOT NULL,
+  `std_departments` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -9959,9 +9714,9 @@ INSERT INTO `student_table` (`std_id`, `std_name`, `std_departments`) VALUES
 
 CREATE TABLE `user_data` (
   `user_id` int(11) NOT NULL,
-  `user_name` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `user_password` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
-  `is_admin` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N'
+  `user_name` varchar(20) NOT NULL,
+  `user_password` varchar(256) NOT NULL,
+  `is_admin` enum('Y','N') NOT NULL DEFAULT 'N'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
