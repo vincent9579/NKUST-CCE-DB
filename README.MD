@@ -20,15 +20,9 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
 **管理員帳號** 
 admin:12345678
 
-**試用帳號**
-s0706131:12345678
-
-註冊還沒寫好關聯
-
 ## 說明
 **BUG**
 - 已知未登入帳戶無法租借
-- 租借還不用審核
 
 **已經做完的**
 - login.php + login.html
@@ -45,15 +39,10 @@ s0706131:12345678
     租借教室
 - rental_records.php
     租借紀錄
-
-**還沒動工的**
 - register.php
-    還沒搞
+    應該能註冊了
 - admin_center.php
-    管理中心，也還沒搞
-
-**有空在做**
-- 前後端分離
+    管理中心，單純審核用
 
 **資料庫**
 final_project 為主要的資料庫 另一個已經廢棄了
@@ -67,5 +56,10 @@ final_project下有四個資料表：
 - nkust_course_table_cleaned
 course_table 1NF之前的資料表，基本上沒用處，之後會刪掉
 
-**tools**
-基本上不用理這些，通常是拿來處理固定的SQL資料，用完一次就用不到的工具。
+## Roadmap
+| 描述 | 狀態 |
+| ----  | ---- |
+| 完整測試 | 進行中 |
+| 前端美化 | 進行中 |
+| 將後端與前端分離 | 未完成 |
+| 後端node js + 前端 vue | 未來在做 |
