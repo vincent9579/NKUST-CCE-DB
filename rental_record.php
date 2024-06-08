@@ -31,7 +31,7 @@ if (!isset($_SESSION['username'])) {
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 在這裡插入你的內容 -->
     <div class="flex items-center justify-center min-h-screen">
@@ -73,15 +73,21 @@ if (!isset($_SESSION['username'])) {
                     $result = $stmt->get_result();
                     $rental_list = array();
                     for ($i = 1; $i <= $result->num_rows; $i++) {
+
                         $row = $result->fetch_assoc();
-                        if ($row['username'] != $_SESSION['username'] && !$is_admin) {
+                        if ($row['username'] != $_SESSION['username']) {
                             continue;
                         }
+                        $temp[] = $row['rent_period'];
                         // 同create_time的資料合併
                         if (isset($rental_list[$row['create_time']])) {
                             if ($row['rent_period'] == 'A') {
-                                if ($rental_list[$row['create_time']]['start_period'] <= 4) {
-                                    $rental_list[$row['create_time']]['end_period'] = 'A';
+                                if ($rental_list[$row['create_time']]['start_period'] <= "4") {
+                                    if ($rental_list[$row['create_time']]['end_period'] == '5') {
+                                        continue;
+                                    } else {
+                                        $rental_list[$row['create_time']]['end_period'] = 'A';
+                                    }
                                 } else {
                                     $rental_list[$row['create_time']]['start_period'] = 'A';
                                 }
@@ -97,8 +103,9 @@ if (!isset($_SESSION['username'])) {
                                 'end_period' => $row['rent_period']
                             );
                         }
-
                     }
+
+
                     if (count($rental_list) == 0) {
                         echo "<tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>";
                         echo "<td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>";

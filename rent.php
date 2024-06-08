@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $A = "A";
 
     if ($start_period == "A" && $end_period == "A") {
-        $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssss", $username, $classroom, $rent_date, $start_period, $reason);
         try {
             $stmt->execute();
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } else {
         if ($start_period == 4 && $end_period == 5) {
 
-            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
             try {
                 $stmt->execute();
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             }
         }
         if ($end_period == "A") {
-            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $classroom, $rent_date, $end_period, $reason);
             try {
                 $stmt->execute();
@@ -76,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $end_period = "4";
         }
         if ($start_period == "A") {
-            $stmt = $conn->prepare("INSERT INTO rental_table (,username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
+            $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $username, $classroom, $rent_date, $start_period, $reason);
             try {
                 $stmt->execute();
             } catch (mysqli_sql_exception $e) {
@@ -90,11 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     throw $e; // rethrow the exception if it's not a duplicate entry error
                 }
             }
-            $start_period = 5;
+            $start_period = "5";
         }
         // Insert into rent_data
         for ($i = $start_period; $i <= $end_period; $i++) {
-            $stmt = $conn->prepare("INSERT INTO rental_table ( username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $classroom, $rent_date, $i, $reason);
             try {
                 $stmt->execute();

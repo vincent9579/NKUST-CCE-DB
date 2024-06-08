@@ -283,7 +283,7 @@ while ($row = $rental->fetch_assoc()) {
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 選擇教室 -->
     <?php

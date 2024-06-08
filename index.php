@@ -10,26 +10,26 @@ if (!isset($_SESSION['username'])) {
 }
 
 $conn = require_once "config.php";
+
+// 找出有哪些學院
+$colleages = [];
+$query = "SELECT DISTINCT colleage FROM classroom_table";
+$result = $conn->query($query);
+while ($row = $result->fetch_row()) {
+    $colleages[] = $row[0];
+}
+
 // 設置每頁顯示的記錄數
 $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // 獲取過濾條件
-$department = isset($_GET['department']) ? $_GET['department'] : '';
-$major = isset($_GET['major']) ? $_GET['major'] : '';
-$class = isset($_GET['class']) ? $_GET['class'] : '';
-
+$colleage = isset($_GET['colleage']) ? $_GET['colleage'] : '';
 // 構建過濾條件的SQL查詢
 $conditions = [];
-if ($department) {
-    $conditions[] = "department = '" . $conn->real_escape_string($department) . "'";
-}
-if ($major) {
-    $conditions[] = "major = '" . $conn->real_escape_string($major) . "'";
-}
-if ($class) {
-    $conditions[] = "class = '" . $conn->real_escape_string($class) . "'";
+if ($colleage) {
+    $conditions[] = "colleage = '" . $conn->real_escape_string($colleage) . "'";
 }
 $where = '';
 if (count($conditions) > 0) {
@@ -37,13 +37,13 @@ if (count($conditions) > 0) {
 }
 
 // 獲取總記錄數
-$total_query = "SELECT COUNT(*) FROM nkust_course_table $where";
+$total_query = "SELECT COUNT(*) FROM classroom_table $where";
 $total_result = $conn->query($total_query);
 $total_rows = $total_result->fetch_row()[0];
 $total_pages = ceil($total_rows / $limit);
 
 // 獲取當前頁的記錄
-$query = "SELECT * FROM nkust_course_table $where LIMIT $limit OFFSET $offset";
+$query = "SELECT * FROM classroom_table $where LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
 ?>
 
@@ -64,7 +64,7 @@ $result = $conn->query($query);
 </head>
 
 <body class="bg-white dark:bg-gray-900">
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
     <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
         <form method="GET" action="" class="flex flex-wrap space-x-4">
             <div class="mb-4 flex-1">
@@ -77,21 +77,17 @@ $result = $conn->query($query);
                 </select>
             </div>
             <div class="mb-4 flex-1">
-                <label for="department"
-                    class="block text-sm font-medium text-gray-900 dark:text-white">Department:</label>
-                <input type="text" name="department" id="department"
-                    value="<?php echo htmlspecialchars($department); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div class="mb-4 flex-1">
-                <label for="major" class="block text-sm font-medium text-gray-900 dark:text-white">Major:</label>
-                <input type="text" name="major" id="major" value="<?php echo htmlspecialchars($major); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
-            </div>
-            <div class="mb-4 flex-1">
-                <label for="class" class="block text-sm font-medium text-gray-900 dark:text-white">Class:</label>
-                <input type="text" name="class" id="class" value="<?php echo htmlspecialchars($class); ?>"
-                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                <label for="colleage"
+                    class="block text-sm font-medium text-gray-900 dark:text-white">colleage:</label>
+                <select name="colleage" id="colleage" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                    <?php
+                    echo '<option selected value="">All</option>';
+                    foreach ($colleages as $c) {
+                        echo '<option value="' . $c . '" ' . ($colleage == $c ? 'selected' : '') . '>' . $c . '</option>';
+                    }
+                    
+                    ?>
+                </select>
             </div>
             <div class="flex items-end mb-4">
                 <button type="submit"
@@ -109,6 +105,7 @@ $result = $conn->query($query);
                     class="font-semibold text-gray-900 dark:text-white"><?php echo $offset + 1; ?>-<?php echo min($offset + $limit, $total_rows); ?></span>
                 of <span class="font-semibold text-gray-900 dark:text-white"><?php echo $total_rows; ?></span>
             </span>
+            
             <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
                 <?php if ($page > 1): ?>
                     <li>
@@ -162,54 +159,19 @@ $result = $conn->query($query);
                 <thead
                     class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
                     <tr>
-                        <th scope="col" class="px-6 py-3">ID</th>
-                        <th scope="col" class="px-6 py-3">選課代號</th>
-                        <th scope="col" class="px-6 py-3">上課校區</th>
-                        <th scope="col" class="px-6 py-3">部別</th>
-                        <th scope="col" class="px-6 py-3">科系</th>
-                        <th scope="col" class="px-6 py-3">班級</th>
-                        <th scope="col" class="px-6 py-3">合班班級</th>
-                        <th scope="col" class="px-6 py-3">永久課號</th>
-                        <th scope="col" class="px-6 py-3">科目名稱</th>
-                        <th scope="col" class="px-6 py-3">學分</th>
-                        <th scope="col" class="px-6 py-3">授課時數</th>
-                        <th scope="col" class="px-6 py-3">實習時數</th>
-                        <th scope="col" class="px-6 py-3">必/選</th>
-                        <th scope="col" class="px-6 py-3">授課教師</th>
-                        <th scope="col" class="px-6 py-3">教室</th>
-                        <th scope="col" class="px-6 py-3">修課人數</th>
-                        <th scope="col" class="px-6 py-3">人數上限</th>
-                        <th scope="col" class="px-6 py-3">上課時間</th>
-                        <th scope="col" class="px-6 py-3">全英授課</th>
-                        <th scope="col" class="px-6 py-3">遠距教學</th>
-                        <th scope="col" class="px-6 py-3">授課大綱</th>
+                        <th scope="col" class="px-6 py-3">教室編號</th>
+                        <th scope="col" class="px-6 py-3">學院/大樓</th>
+                        <th scope="col" class="px-6 py-3">最大容納人數</th>
+                        <th scope="col" class="px-6 py-3">資料正確性</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 whitespace-nowrap">
-                            <td class="px-6 py-4"><?php echo $row['id']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['course_code']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['campus']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['department']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['major']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['class']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['combined_class']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['permanent_course_code']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['course_name']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['credits']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['teaching_hours']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['practice_hours']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['required_or_elective']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['instructor']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['classroom']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['enrolled_students']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['max_students']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['class_time']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['full_english_teaching']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['distance_learning']; ?></td>
-                            <td class="px-6 py-4"><?php echo $row['remarks']; ?></td>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 whitespace-nowrap">
+                            <td class="px-6 py-4"><?php echo $row['classroom'] ?? ''; ?></td>
+                            <td class="px-6 py-4"><?php echo $row['colleage'] ?? ''; ?></td>
+                            <td class="px-6 py-4 "><?php echo $row['max_capacity'] ?? ''; ?></td>
+                            <td class="px-6 py-4"><?php echo $row['is_realdata'] == 'N' ? '❓' : '✅'; ?></td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
