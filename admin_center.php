@@ -9,6 +9,11 @@ if (!isset($_SESSION['username'])) {
     $is_admin = $_SESSION['is_admin'];
 }
 
+if ($is_admin != 'Y'){
+    header("Location: index.php");
+    exit();
+}
+
 $conn = require_once "config.php";
 
 
@@ -89,7 +94,7 @@ $result = $conn->query($sql);
                                 <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['rent_status']; ?></td>
                                 <td>
                                     <?php if ($row['rent_status'] == 'U'): ?>
-                                        <select name="status[<?php echo $row['create_time']; ?>]">
+                                        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="status[<?php echo $row['create_time']; ?>]">
                                             <option value="Y">通過</option>
                                             <option value="N">不通過</option>
                                         </select>
@@ -101,7 +106,7 @@ $result = $conn->query($sql);
                         <?php endwhile; ?>
                 </table>
                 <div class="flex justify-center mt-4">
-                    <button type="submit"
+                    <button type="submit" 
                     class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">送出</button>
                 </div>
                 
@@ -109,8 +114,6 @@ $result = $conn->query($sql);
             </table>
         </div>
     </form>
-
-    
 
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
