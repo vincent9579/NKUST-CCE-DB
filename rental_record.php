@@ -107,21 +107,29 @@ if (!isset($_SESSION['username'])) {
 
 
                     if (count($rental_list) == 0) {
-                        echo "<tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>";
-                        echo "<td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>";
-                        echo "</tr>";
+                    ?>
+                        <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>
+                            <td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>
+                        </tr>
+                    <?php
                     } else {
                         sort($rental_list);
                         $j = 1;
                         foreach ($rental_list as $rental) {
-                            echo "<tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'>" . $j . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'>" . $rental['create_time'] . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'>" . $rental['classroom'] . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'>" . $rental['rent_date'] . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'>" . $rental['start_period'] . "-" . $rental['end_period'] . "</td>";
-                            echo "<td class='px-6 py-4 whitespace-nowrap'><a href='edit_rental.php?classroom=" . $rental['classroom'] . "&rent_date=" . $rental['rent_date'] . "&start_period=" . $rental['start_period'] . "&end_period=" . $rental['end_period'] . "' class='text-blue-600 hover:text-blue-900'>編輯</a></td>";
-                            echo "</tr>";
+                    ?>
+                            <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>
+                                <td class='px-6 py-4 whitespace-nowrap'><?php echo $j; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['create_time']; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['classroom']; ?></td>
+                                <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['rent_date']; ?></td>
+                                <?php if ($rental['start_period'] == $rental['end_period']) { ?>
+                                    <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['start_period']; ?></td>
+                                <?php } else { ?>
+                                    <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['start_period'] . "-" . $rental['end_period']; ?></td>
+                                <?php } ?>
+                                <td class='px-6 py-4 whitespace-nowrap'><a href='edit_rental.php?classroom=<?php echo $rental['classroom']; ?>&rent_date=<?php echo $rental['rent_date']; ?>&start_period=<?php echo $rental['start_period']; ?>&end_period=<?php echo $rental['end_period']; ?>' class='text-blue-600 hover:text-blue-900'>編輯</a></td>
+                            </tr>
+                    <?php
                             $j++;
                         }
                     }

@@ -59,57 +59,40 @@
                 $result = mysqli_query($conn, $sql);
 
                 // 處理查詢結果
-                if ($result) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo '
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    ' . $row['classroom'] . '
-                                </th>
-                                <td class="px-6 py-4">
-                                    ' . $row['colleage'] . '
-                                </td>
-                                <td class="px-6 py-4">
-                                    ' . $row['max_capacity'] . '
-                                </td>
-                                <td class="px-6 py-4">';
-                        echo $row['is_realdata'] == 'N' ? '❓' : '✅';
-                        echo '    
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button onclick="submitForm2(\'' . $row['classroom'] . '\')" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                                        租借
-                                    </button>
-                                </td>
-                            </tr>
-                        ';
-
-
-                    }
-                } else {
-                    echo "查詢失敗: " . mysqli_error($connection);
-                }
-
-
-
+                if ($result):
+                    while ($row = mysqli_fetch_assoc($result)):
                 ?>
-
-
-                <!-- <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Apple MacBook Pro 17"
-                </th>
-                <td class="px-6 py-4">
-                    Silver
-                </td>
-                <td class="px-6 py-4">
-                    Laptop
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                </td>
-            </tr> -->
-
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <?= htmlspecialchars($row['classroom'], ENT_QUOTES, 'UTF-8') ?>
+                            </th>
+                            <td class="px-6 py-4">
+                                <?= htmlspecialchars($row['colleage'], ENT_QUOTES, 'UTF-8') ?>
+                            </td>
+                            <td class="px-6 py-4">
+                                <?= htmlspecialchars($row['max_capacity'], ENT_QUOTES, 'UTF-8') ?>
+                            </td>
+                            <td class="px-6 py-4">
+                                <?= $row['is_realdata'] == 'N' ? '❓' : '✅' ?>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button onclick="submitForm2('<?= htmlspecialchars($row['classroom'], ENT_QUOTES, 'UTF-8') ?>')" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+                                    租借
+                                </button>
+                            </td>
+                        </tr>
+                <?php
+                    endwhile;
+                else:
+                ?>
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                            查詢失敗: <?= htmlspecialchars(mysqli_error($conn), ENT_QUOTES, 'UTF-8') ?>
+                        </td>
+                    </tr>
+                <?php
+                endif;
+                ?>
             </tbody>
         </table>
     </div>
@@ -119,18 +102,11 @@
     function submitForm2(classroom) {
         var classroom = classroom;
 
-
-        var weekday = "<?php echo $weekday ?>";
-        var rent_date = <?php echo "'$rent_date'" ?>;
-        var start_period = "<?php echo $start_time ?>";
-        var end_period = "<?php echo $end_time ?>";
-        var rent_reason = <?php 
-            if ($rent_reason == "") {
-                echo "''";
-            } else {
-                echo "'$rent_reason'";
-            }
-        ?>;
+        var weekday = "<?= $weekday ?>";
+        var rent_date = '<?= $rent_date ?>';
+        var start_period = "<?= $start_time ?>";
+        var end_period = "<?= $end_time ?>";
+        var rent_reason = <?= json_encode($rent_reason) ?>;
 
         if (classroom === "" || weekday === "" || rent_date === "" || start_period === "" || end_period === "") {
             alert("Please fill in all the fields.");

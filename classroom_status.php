@@ -11,8 +11,6 @@ if (!isset($_SESSION['username'])) {
 
 $conn = require_once ('config.php');
 
-
-
 $classroom = isset($_GET['classroom']) ? $_GET['classroom'] : '';
 
 $where = '';
@@ -36,7 +34,6 @@ if ($classroom) {
     $params[] = $classroom;
 }
 
-
 // 獲取教室狀況
 $query = "SELECT * FROM course_table $where ORDER BY weekday, period";
 $stmt = $conn->prepare($query);
@@ -49,8 +46,6 @@ if ($stmt) {
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
-
-
 
     // 將result
     while ($row = $result->fetch_assoc()) {
@@ -146,7 +141,6 @@ while ($row = $rental->fetch_assoc()) {
     }
 
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -286,63 +280,59 @@ while ($row = $rental->fetch_assoc()) {
     <?php include './components/navigaion.php'; ?>
 
     <!-- 選擇教室 -->
-    <?php
-    if (isset($_SESSION['warn'])) {
-        echo '
-            <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
-    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-    </svg>
-    <div class="ms-3 text-sm font-medium">
-      教室不存在! 請確認輸入的教室編號是否正確。
-    </div>
-    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-2" aria-label="Close">
-      <span class="sr-only">Dismiss</span>
-      <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-      </svg>
-    </button>
-</div>
-            ';
-        unset($_SESSION['warn']);
-    }
-    ?>
-    <?php if ($classroom == "") {
-        echo '
-        <div class="flex h-screen justify-center items-center">
-        <div
-            class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 mx-auto">
-            <h5 class="mb-3 text-base font-semibold text-gray-900 md:text-xl dark:text-white">
-                選擇教室
-            </h5>
-
-            <p class="text-sm font-normal text-gray-500 dark:text-gray-400">選擇一個教室即可查詢該教室的課表及租用情況</p>
-            <ul class="my-4 space-y-3">
-                <form action="" method="GET">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                            </svg>
-                        </div>
-                        <input type="search" id="default-search" value=""
-                            class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            placeholder="教室編號" name="classroom" />
-
-                    </div>
-                    
-                    <button type="submit"
-                        class="w-full mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                </form>
-
-            </ul>
-            
+    <?php if (isset($_SESSION['warn'])): ?>
+        <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
+            <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            </svg>
+            <div class="ms-3 text-sm font-medium">
+                教室不存在! 請確認輸入的教室編號是否正確。
+            </div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-2" aria-label="Close">
+                <span class="sr-only">Dismiss</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
         </div>
-    </div>
-        ';
-    } else {
+        <?php unset($_SESSION['warn']); ?>
+    <?php endif; ?>
+
+    <?php if ($classroom == ""): ?>
+        <div class="flex h-screen justify-center items-center">
+            <div
+                class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 dark:bg-gray-800 dark:border-gray-700 mx-auto">
+                <h5 class="mb-3 text-base font-semibold text-gray-900 md:text-xl dark:text-white">
+                    選擇教室
+                </h5>
+
+                <p class="text-sm font-normal text-gray-500 dark:text-gray-400">選擇一個教室即可查詢該教室的課表及租用情況</p>
+                <ul class="my-4 space-y-3">
+                    <form action="" method="GET">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input type="search" id="default-search" value=""
+                                class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="教室編號" name="classroom" />
+
+                        </div>
+                        
+                        <button type="submit"
+                            class="w-full mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                    </form>
+
+                </ul>
+                
+            </div>
+        </div>
+    <?php else: ?>
+        <?php 
         $periodToTime = [
             "0" => "08:10-09:00",
             "1" => "09:10-10:00",
@@ -359,94 +349,73 @@ while ($row = $rental->fetch_assoc()) {
             "12" => "20:20-21:10",
             "13" => "21:15-22:05"
         ];
-        echo '
+        ?>
         <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <div class="overflow-x-auto">
-        
-      
-           
-        ';
-        if ($status == "valid") {
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <div class="overflow-x-auto">
+                    <?php if ($status == "valid"): ?>
+                        <button class="w-24 h-10 bg-blue-700 text-white rounded-lg" onclick="getCheckedCheckboxes()">租借教室</button>
+                        <form id="redirectForm" method="POST" action="rent_classroom.php" style="display: none;">
+                            <input type="hidden" name="data" id="hiddenData">
+                        </form>
+                    <?php endif; ?>
 
-            echo '<button class="w-24 h-10 bg-blue-700 text-white rounded-lg" onclick="getCheckedCheckboxes()">租借教室</button>
-            <form id="redirectForm" method="POST" action="rent_classroom.php" style="display: none;">
-    <input type="hidden" name="data" id="hiddenData">
-</form>
+                    <!-- 取消查詢 -->
+                    <a href="classroom_status.php" class="text-blue-700 hover:underline dark:text-blue-500">取消查詢</a>
 
-            ';
-        }
-
-        echo '
-            <!-- 取消查詢 -->
-            <a href="classroom_status.php" class="text-blue-700 hover:underline dark:text-blue-500">取消查詢</a>
-
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
-            <thead
-                class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
-                <tr>
-                    <th scope="col" class="px-6 py-3">節次</th>
-                    <th scope="col" class="px-6 py-3">星期一</th>
-                    <th scope="col" class="px-6 py-3">星期二</th>
-                    <th scope="col" class="px-6 py-3">星期三</th>
-                    <th scope="col" class="px-6 py-3">星期四</th>
-                    <th scope="col" class="px-6 py-3">星期五</th>
-                    <th scope="col" class="px-6 py-3">星期六</th>
-                    <th scope="col" class="px-6 py-3">星期日</th>
-
-                </tr>
-            </thead>
-            <tbody>
-
-                ';
-        for ($i = 0; $i < 14; $i++) {
-            echo '<tr class=\'border-b border-gray-200 dark:border-gray-700\'>';
-            echo '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">';
-            if ($i < 4) {
-                echo $i + 1;
-            } elseif ($i == 4) {
-                echo 'A';
-            } else {
-                echo $i;
-            }
-            echo '<br>';
-            echo $periodToTime[$i];
-            echo '</td>';
-            for ($j = 0; $j < 7; $j++) {
-                echo '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">';
-                if (isset($timeTable[$j][$i])) {
-                    $row = $timeTable[$j][$i];
-                    if ($row['course_name'] == "租借") {
-                        echo '<input  id="checkbox_' . $j . '_' . $i . '" type="checkbox" name="checkbox[' . $j . '][' . $i . ']" value="' . $j . '_' . $i . '" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-' . $j . '" data-column="' . $j . '" data-row="' . $i . '" onclick="limitCheckbox(this, ' . $j . ', ' . $i . ')">';
-                    } 
-                    echo $row['course_name'];
-                    echo '<br>';
-                    echo $row['instructor'];
-                    echo '<br>';
-                    echo $row['major'];
-
-                } else {
-                    echo '<input  id="checkbox_' . $j . '_' . $i . '" type="checkbox" name="checkbox[' . $j . '][' . $i . ']" value="' . $j . '_' . $i . '" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-' . $j . '" data-column="' . $j . '" data-row="' . $i . '" onclick="limitCheckbox(this, ' . $j . ', ' . $i . ')">';
-                }
-                echo '</td>';
-            }
-            echo '</tr>';
-        }
-        echo '
-            </tbody>
-        </table>
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
+                        <thead class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">節次</th>
+                                <th scope="col" class="px-6 py-3">星期一</th>
+                                <th scope="col" class="px-6 py-3">星期二</th>
+                                <th scope="col" class="px-6 py-3">星期三</th>
+                                <th scope="col" class="px-6 py-3">星期四</th>
+                                <th scope="col" class="px-6 py-3">星期五</th>
+                                <th scope="col" class="px-6 py-3">星期六</th>
+                                <th scope="col" class="px-6 py-3">星期日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php for ($i = 0; $i < 14; $i++): ?>
+                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                        <?php if ($i < 4): ?>
+                                            <?= $i + 1 ?><br>
+                                        <?php elseif ($i == 4): ?>
+                                            A<br>
+                                        <?php else: ?>
+                                            <?= $i ?><br>
+                                        <?php endif; ?>
+                                        <?= $periodToTime[$i] ?>
+                                    </td>
+                                    <?php for ($j = 0; $j < 7; $j++): ?>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                            <?php if (isset($timeTable[$j][$i])): ?>
+                                                <?php $row = $timeTable[$j][$i]; ?>
+                                                <?php if ($row['course_name'] == "租借"): ?>
+                                                    <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox" name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>" data-column="<?= $j ?>" data-row="<?= $i ?>" onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
+                                                <?php endif; ?>
+                                                <?= $row['course_name'] ?><br>
+                                                <?= $row['instructor'] ?><br>
+                                                <?= $row['major'] ?>
+                                            <?php else: ?>
+                                                <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox" name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>" data-column="<?= $j ?>" data-row="<?= $i ?>" onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
+                                            <?php endif; ?>
+                                        </td>
+                                    <?php endfor; ?>
+                                </tr>
+                            <?php endfor; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        </div>
-        </form>
-        </div>
-        
-        ';
-    }
-    ?>
+    <?php endif; ?>
 
     <script>
         function getCheckedCheckboxes() {
-            var classroom = "<?php echo ($classroom) ?>";
+            var classroom = "<?= $classroom ?>";
             var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             var values = [];
             var weekdays = [];
@@ -473,12 +442,10 @@ while ($row = $rental->fetch_assoc()) {
                 };
 
                 for (var i = 0; i < values.length; i++) {
-                    // (4)4 to weekday=4 and time=4
                     var weekday = values[i].split("_")[0];
                     var time = values[i].split("_")[1];
                     weekdays.push(numToWeekday[weekday]);
 
-                    // time = 4 時為A
                     if (time == 4) {
                         time = "A";
                         times.push(time);
@@ -490,7 +457,6 @@ while ($row = $rental->fetch_assoc()) {
 
                     if (i > 0) {
                         if (weekdays[i] != weekdays[i - 1]) {
-
                             return false;
                         }
                     }
@@ -499,45 +465,32 @@ while ($row = $rental->fetch_assoc()) {
                 times.sort();
 
                 if (times.length == 1) {
-                    // list [5] to 5
                     start_time = times[0];
                     end_time = times[0];
-
                 } else {
-                    //處理有A的情況
                     if (times.includes("A")) {
                         if (times.length == 2) {
-                            // list [5,A] to A-5 [4,A] to 4-A
                             if (times[0] <= 4) {
                                 start_time = times[0];
                                 end_time = times[1];
-
                             } else {
-
                                 start_time = times[1];
                                 end_time = times[0];
-
                             }
-
                         }
                         if (times.length == 3) {
                             if (times[1] == 6) {
-                                // list [5,6,A] to A-6
                                 start_time = times[2];
                                 end_time = times[1];
                             } else if (times[1] == 5) {
-                                // list [4,5,A] to 4-5
                                 start_time = times[0];
                                 end_time = times[1];
-                            }
-                            else {
-                                // list [3,4,A] to 3-A
+                            } else {
                                 start_time = times[0];
                                 end_time = times[2];
                             }
                         }
                     } else {
-                        // list [5,6,7] to 5-7
                         start_time = times[0];
                         end_time = times[times.length - 1];
                     }
@@ -552,17 +505,14 @@ while ($row = $rental->fetch_assoc()) {
             };
 
             $.ajax({
-                url: 'rent_classroom.php', // 後端接收請求的URL
+                url: 'rent_classroom.php',
                 type: 'POST',
                 data: postData,
                 success: function (response) {
-                    // 將需要傳遞的數據設置到隱藏表單
                     $('#hiddenData').val(JSON.stringify(postData));
-                    // 提交表單
                     $('#redirectForm').submit();
                 },
                 error: function (xhr, status, error) {
-                    // 處理錯誤響應
                     alert('跳轉失敗: ' + error);
                 }
             });
@@ -570,9 +520,9 @@ while ($row = $rental->fetch_assoc()) {
         }
     </script>
 
-    <!-- 必要js -->
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 
 </html>
+

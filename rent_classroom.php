@@ -132,12 +132,8 @@ if (is_array($_GET) && count($_GET) > 0) {
     }
     ?>
     <script>
-        function submitForm(classroom) {
-            var classroom = classroom;
-            if (classroom === "") {
-                classroom = "<?php echo $classroom ?>";
-            }
-            
+        function submitForm() {
+            var classroom = "<?php echo $classroom ?>";  
             var weekday = "<?php echo $weekday ?>";
             var rent_date = document.getElementById('date').value;
             var start_period = "<?php echo $start_time ?>";
