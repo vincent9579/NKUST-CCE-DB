@@ -38,56 +38,88 @@ $result = $conn->query($sql);
 
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
-    <?php include 'components\navigaion.php'; ?>
+    <?php include './components/navigaion.php'; ?>
 
     <!-- 在這裡插入你的內容 -->
     <?php if ($result->num_rows > 0): ?>
-        <form action="approve.php" method="post">
-            <table border="1">
-                <tr>
-                    <th>Create Time</th>
-                    <th>Username</th>
-                    <th>Classroom</th>
-                    <th>Rent Date</th>
-                    <th>Rent Period</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-                <?php while($row = $result->fetch_assoc()): ?>
+    <form action="approve.php" method="post">
+        <div class="relative overflow-x-auto shadow-md  sm:p-6 lg:p-8 ">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-collapse border border-gray-200 dark:border-gray-700">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <td><?php echo $row['create_time']; ?></td>
-                        <td><?php echo $row['username']; ?></td>
-                        <td><?php echo $row['classroom']; ?></td>
-                        <td><?php echo $row['rent_date']; ?></td>
-                        <td><?php echo $row['rent_period']; ?></td>
-                        <td><?php echo $row['reason']; ?></td>
-                        <td><?php echo $row['rent_status']; ?></td>
-                        <td>
-                            <?php if ($row['rent_status'] == 'U'): ?>
-                                <select name="status[<?php echo $row['create_time']; ?>]">
-                                    <option value="Y">通過</option>
-                                    <option value="N">不通過</option>
-                                </select>
-                            <?php else: ?>
-                                已審核
-                            <?php endif; ?>
-                        </td>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            申請時間
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            使用者名字
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            租借教室
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            租借日期
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            租借時段
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            租借原因
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            租借狀態
+                        </th>
+                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
+                            審核
+                        </th>
                     </tr>
-                <?php endwhile; ?>
+                </thead>
+                <tbody>
+                    <?php else: ?>
+                        <p>No rentals found.</p>
+                    <?php endif; ?>
+                        <?php $conn->close(); ?>
+                        <?php while($row = $result->fetch_assoc()): ?>
+                            <tr class="bg-white dark:bg-gray-800 px-6 py-3">
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['create_time']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['username']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['classroom']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['rent_date']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['rent_period']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['reason']; ?></td>
+                                <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $row['rent_status']; ?></td>
+                                <td>
+                                    <?php if ($row['rent_status'] == 'U'): ?>
+                                        <select name="status[<?php echo $row['create_time']; ?>]">
+                                            <option value="Y">通過</option>
+                                            <option value="N">不通過</option>
+                                        </select>
+                                    <?php else: ?>
+                                        已審核
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                </table>
+                <div class="flex justify-center mt-4">
+                    <button type="submit"
+                    class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">送出</button>
+                </div>
+                
+                </tbody>
             </table>
-            <input type="submit" value="Submit">
-        </form>
-    <?php else: ?>
-        <p>No rentals found.</p>
-    <?php endif; ?>
-    <?php $conn->close(); ?>
+        </div>
+    </form>
 
+    
 
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 
 </html>
+
+
+
+
 
 
