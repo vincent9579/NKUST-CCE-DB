@@ -379,7 +379,7 @@ while ($row = $rental->fetch_assoc()) {
                         <tbody>
                             <?php for ($i = 0; $i < 14; $i++): ?>
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                    <td class="px-6 py-4  text-sm font-medium text-gray-900 dark:text-white">
                                         <?php if ($i < 4): ?>
                                             <?= $i + 1 ?><br>
                                         <?php elseif ($i == 4): ?>
@@ -390,7 +390,7 @@ while ($row = $rental->fetch_assoc()) {
                                         <?= $periodToTime[$i] ?>
                                     </td>
                                     <?php for ($j = 0; $j < 7; $j++): ?>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                        <td class="px-6 py-4  text-sm font-medium text-gray-900 dark:text-white">
                                             <?php if (isset($timeTable[$j][$i])): ?>
                                                 <?php $row = $timeTable[$j][$i]; ?>
                                                 <?php if ($row['course_name'] == "租借"): ?>

@@ -97,78 +97,118 @@ if (is_array($_GET) && count($_GET) > 0) {
 <body class="bg-white dark:bg-gray-900">
     <!-- navigation -->
     <?php include './components/navigaion.php'; ?>
-
-    <!-- 在這裡插入你的內容 -->
-    <?php
-    if (is_array($_GET) && count($_GET) > 0) {
-        if ($rent_date != "" && $start_time != "" && $end_time != "") {
-            include './components/rent_table.php';
+    <?php if ($status == "valid"): ?>
+        <!-- 在這裡插入你的內容 -->
+        <?php
+        if (is_array($_GET) && count($_GET) > 0) {
+            if ($rent_date != "" && $start_time != "" && $end_time != "") {
+                include './components/rent_table.php';
+            } else {
+                ?>
+                <div id="alert-additional-content-2"
+                    class="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+                    role="alert">
+                    <div class="flex items-center">
+                        <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <h3 class="text-lg font-medium">錯誤</h3>
+                    </div>
+                    <div class="mt-2 mb-4 text-sm">
+                        <p>請選擇正確的日期和時間。</p>
+                        <p>日期必須大於今天。</p>
+                        <p>開始時間必須小於結束時間。</p>
+                        <p>請重新確認後再進行查詢。</p>
+                    </div>
+                    <div class="flex">
+                        <button type="button"
+                            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            onclick="window.location.href='rent_classroom.php'">
+                            返回
+                        </button>
+                    </div>
+                </div>
+                <?php
+            }
         } else {
-            echo '
-            <div id="alert-additional-content-2" class="p-4 mb-4 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+            include './components/rent_form.php';
+        }
+        ?>
+        <script>
+            function submitForm() {
+                var classroom = "<?php echo $classroom ?>";  
+                var weekday = "<?php echo $weekday ?>";
+                var rent_date = document.getElementById('date').value;
+                var start_period = "<?php echo $start_time ?>";
+                var end_period = "<?php echo $end_time ?>";
+                var rent_reason = document.getElementById('description').value;
+
+                if (classroom === "" || weekday === "" || rent_date === "" || start_period === "" || end_period === "") {
+                    alert("Please fill in all the fields.");
+                    return false;
+                }
+
+                var data = {
+                    classroom: classroom,
+                    rent_date: rent_date,
+                    start_period: start_period,
+                    end_period: end_period,
+                    rent_reason: rent_reason
+                };
+
+                console.log(data);
+
+                $.ajax({
+                    type: "POST",
+                    url: "rent.php",
+                    data: { data: JSON.stringify(data) },
+                    success: function (response) {
+                        alert("Rent successfully!");
+                        window.location.href = "rental_record.php";
+                    },
+                    error: function (response) {
+                        alert("Failed to rent the classroom.");
+                    }
+                });
+            }
+        </script>
+    <?php else: ?>
+        <div id="alert-additional-content-1"
+            class="p-4 mb-4 text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800"
+            role="alert">
             <div class="flex items-center">
-                <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                <svg class="flex-shrink-0 w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
                 </svg>
                 <span class="sr-only">Info</span>
-                <h3 class="text-lg font-medium">錯誤</h3>
+                <h3 class="text-lg font-medium">您現在是訪客</h3>
             </div>
             <div class="mt-2 mb-4 text-sm">
-                <p>請選擇正確的日期和時間。</p>
-                <p>日期必須大於今天。</p>
-                <p>開始時間必須小於結束時間。</p>
-                <p>請重新確認後再進行查詢。</p>
+                訪客無法使用此功能，請先登入。
             </div>
             <div class="flex">
-                <button type="button" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" onclick="window.location.href=\'rent_classroom.php\'">
-                返回
+                <button type="button" onclick="location.href='login.html'"
+                    class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <svg class="me-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        viewBox="0 0 20 14">
+                        <path
+                            d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                    </svg>
+                    登入
+                </button>
+                <button type="button" onclick="location.href='index.php'"
+                    class="text-blue-800 bg-transparent border border-blue-800 hover:bg-blue-900 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:hover:bg-blue-600 dark:border-blue-600 dark:text-blue-400 dark:hover:text-white dark:focus:ring-blue-800"
+                    data-dismiss-target="#alert-additional-content-1" aria-label="Close">
+                    關閉
                 </button>
             </div>
-            </div>
-            ';
-        }
-    } else {
-        include './components/rent_form.php';
-    }
-    ?>
-    <script>
-        function submitForm() {
-            var classroom = "<?php echo $classroom ?>";  
-            var weekday = "<?php echo $weekday ?>";
-            var rent_date = document.getElementById('date').value;
-            var start_period = "<?php echo $start_time ?>";
-            var end_period = "<?php echo $end_time ?>";
-            var rent_reason = document.getElementById('description').value;
-
-            if (classroom === "" || weekday === "" || rent_date === "" || start_period === "" || end_period === "") {
-                alert("Please fill in all the fields.");
-                return false;
-            }
-
-            var data = {
-                classroom: classroom,
-                rent_date: rent_date,
-                start_period: start_period,
-                end_period: end_period,
-                rent_reason: rent_reason
-            };
-
-            console.log(data);
-
-            $.ajax({
-                type: "POST",
-                url: "rent.php",
-                data: { data: JSON.stringify(data) },
-                success: function (response) {
-                    alert("Rent successfully!");
-                    window.location.href = "rental_record.php";
-                },
-                error: function (response) {
-                    alert("Failed to rent the classroom.");
-                }
-            });
-        }
-    </script>
+        </div>
+    <?php endif; ?>
 
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
