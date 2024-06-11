@@ -111,7 +111,7 @@ if (!isset($_SESSION['username'])) {
                     if (count($rental_list) == 0) {
                         ?>
                         <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>
-                            <td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>
+                            <td class='px-6 py-4 whitespace-nowrap' colspan='7'>無租借紀錄</td>
                         </tr>
                         <?php
                     } else {
