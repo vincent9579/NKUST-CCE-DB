@@ -113,4 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $conn->commit();
     $conn->close();
 }
+
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    $create_time = $_GET['create_time'];
+    $stmt = $conn->prepare("DELETE FROM rental_table WHERE create_time = ?");
+    $stmt->bind_param("s", $create_time);
+    $stmt->execute();
+    $stmt->close();
+    $conn->close();
+    header("Location: rental_record.php");
+}
+
 ?>

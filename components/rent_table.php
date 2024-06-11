@@ -34,12 +34,17 @@
                     return array_slice($all_periods, $start_index, $end_index - $start_index + 1);
                 }
 
+                // Sanitize the input values to prevent SQL injection
+                $start_time = mysqli_real_escape_string($conn, $start_time);
+                $end_time = mysqli_real_escape_string($conn, $end_time);
+                $weekday = mysqli_real_escape_string($conn, $weekday);
+
                 $periods_to_check = getPeriodsInRange($start_time, $end_time, $all_periods);
 
-                // 將 periods_to_check 轉換為逗號分隔的字串格式，以便用於 SQL 中的 IN 子句
+                // Convert periods_to_check to a comma-separated string format for the IN clause in SQL
                 $periods_to_check_sql = "'" . implode("','", $periods_to_check) . "'";
 
-                // 建立 SQL 查詢
+                // Build the SQL query
                 $sql = "
                     SELECT 
                         c.classroom, c.colleage, c.max_capacity, c.is_realdata
@@ -55,7 +60,7 @@
                         ct.course_code IS NULL
                     ";
 
-                // 假設你已經連接了 MySQL 數據庫
+                // Execute the SQL query
                 $result = mysqli_query($conn, $sql);
 
                 // 處理查詢結果

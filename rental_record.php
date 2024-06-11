@@ -61,6 +61,9 @@ if (!isset($_SESSION['username'])) {
                             節次
                         </th>
                         <th scope="col" class="px-6 py-3">
+                            審核結果
+                        </th>
+                        <th scope="col" class="px-6 py-3">
                             <span class="sr-only">Edit</span>
                         </th>
                     </tr>
@@ -100,23 +103,22 @@ if (!isset($_SESSION['username'])) {
                                 'classroom' => $row['classroom'],
                                 'rent_date' => $row['rent_date'],
                                 'start_period' => $row['rent_period'],
-                                'end_period' => $row['rent_period']
+                                'end_period' => $row['rent_period'],
+                                'rent_status' => $row['rent_status']
                             );
                         }
                     }
-
-
                     if (count($rental_list) == 0) {
-                    ?>
+                        ?>
                         <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>
                             <td class='px-6 py-4 whitespace-nowrap' colspan='6'>無租借紀錄</td>
                         </tr>
-                    <?php
+                        <?php
                     } else {
                         sort($rental_list);
                         $j = 1;
                         foreach ($rental_list as $rental) {
-                    ?>
+                            ?>
                             <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-70'>
                                 <td class='px-6 py-4 whitespace-nowrap'><?php echo $j; ?></td>
                                 <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['create_time']; ?></td>
@@ -125,11 +127,40 @@ if (!isset($_SESSION['username'])) {
                                 <?php if ($rental['start_period'] == $rental['end_period']) { ?>
                                     <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['start_period']; ?></td>
                                 <?php } else { ?>
-                                    <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['start_period'] . "-" . $rental['end_period']; ?></td>
+                                    <td class='px-6 py-4 whitespace-nowrap'>
+                                        <?php echo $rental['start_period'] . "-" . $rental['end_period']; ?></td>
                                 <?php } ?>
-                                <td class='px-6 py-4 whitespace-nowrap'><a href='edit_rental.php?classroom=<?php echo $rental['classroom']; ?>&rent_date=<?php echo $rental['rent_date']; ?>&start_period=<?php echo $rental['start_period']; ?>&end_period=<?php echo $rental['end_period']; ?>' class='text-blue-600 hover:text-blue-900'>編輯</a></td>
+                                <td class='px-6 py-4 whitespace-nowrap'>
+                                    <?php
+                                        if ($rental['rent_status'] == 'U') {
+                                            echo "審核中";
+                                        } else if ($rental['rent_status'] == 'Y') {
+                                            echo "已審核";
+                                        } else {
+                                            echo "未通過";
+                                        }
+                                    ?>
+                                </td>
+                                <!-- post delete -->
+                                <?php
+                                    if ($rental['rent_status'] == 'U') {
+                                ?>
+                                <td class='px-6 py-4 whitespace-nowrap'>
+                                    <form action='rent.php' method='DELETE'>
+                                        <input type='hidden' name='create_time' value='<?php echo $rental['create_time']; ?>'>
+                                        <button type='submit' class='text-red-600 hover:text-red-900'>刪除</button>
+                                    </form>
+                                </td>
+                                <?php
+                                    } else {
+                                ?>
+                                <td class='px-6 py-4 whitespace-nowrap'></td>
+                                <?php
+                                    }
+                                ?>
+                                
                             </tr>
-                    <?php
+                            <?php
                             $j++;
                         }
                     }
