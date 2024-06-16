@@ -4,6 +4,7 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
@@ -70,7 +71,8 @@ $result = $conn->query($query);
             <div class="mb-4 flex-1">
                 <label for="limit" class="block text-sm font-medium text-gray-900 dark:text-white">Records per
                     page:</label>
-                <select name="limit" id="limit" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select name="limit" id="limit"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="10" <?= $limit == 10 ? 'selected' : ''; ?>>10</option>
                     <option value="20" <?= $limit == 20 ? 'selected' : ''; ?>>20</option>
                     <option value="50" <?= $limit == 50 ? 'selected' : ''; ?>>50</option>
@@ -78,7 +80,8 @@ $result = $conn->query($query);
             </div>
             <div class="mb-4 flex-1">
                 <label for="colleage" class="block text-sm font-medium text-gray-900 dark:text-white">colleage:</label>
-                <select name="colleage" id="colleage" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <select name="colleage" id="colleage"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option selected value="">All</option>
                     <?php foreach ($colleages as $c): ?>
                         <option value="<?= $c ?>" <?= $colleage == $c ? 'selected' : '' ?>><?= $c ?></option>

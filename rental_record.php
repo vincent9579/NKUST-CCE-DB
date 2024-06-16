@@ -4,10 +4,18 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
+    header("Location: index.php");
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
+    if ($is_admin == 'Y') {
+        header("Location: admin_center.php");
+        exit();
+    }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -128,37 +136,38 @@ if (!isset($_SESSION['username'])) {
                                     <td class='px-6 py-4 whitespace-nowrap'><?php echo $rental['start_period']; ?></td>
                                 <?php } else { ?>
                                     <td class='px-6 py-4 whitespace-nowrap'>
-                                        <?php echo $rental['start_period'] . "-" . $rental['end_period']; ?></td>
+                                        <?php echo $rental['start_period'] . "-" . $rental['end_period']; ?>
+                                    </td>
                                 <?php } ?>
                                 <td class='px-6 py-4 whitespace-nowrap'>
                                     <?php
-                                        if ($rental['rent_status'] == 'U') {
-                                            echo "審核中";
-                                        } else if ($rental['rent_status'] == 'Y') {
-                                            echo "已審核";
-                                        } else {
-                                            echo "未通過";
-                                        }
+                                    if ($rental['rent_status'] == 'U') {
+                                        echo "審核中";
+                                    } else if ($rental['rent_status'] == 'Y') {
+                                        echo "已審核";
+                                    } else {
+                                        echo "未通過";
+                                    }
                                     ?>
                                 </td>
                                 <!-- post delete -->
                                 <?php
-                                    if ($rental['rent_status'] == 'U') {
+                                if ($rental['rent_status'] == 'U') {
+                                    ?>
+                                    <td class='px-6 py-4 whitespace-nowrap'>
+                                        <form action='rent.php' method='DELETE'>
+                                            <input type='hidden' name='create_time' value='<?php echo $rental['create_time']; ?>'>
+                                            <button type='submit' class='text-red-600 hover:text-red-900'>刪除</button>
+                                        </form>
+                                    </td>
+                                    <?php
+                                } else {
+                                    ?>
+                                    <td class='px-6 py-4 whitespace-nowrap'></td>
+                                    <?php
+                                }
                                 ?>
-                                <td class='px-6 py-4 whitespace-nowrap'>
-                                    <form action='rent.php' method='DELETE'>
-                                        <input type='hidden' name='create_time' value='<?php echo $rental['create_time']; ?>'>
-                                        <button type='submit' class='text-red-600 hover:text-red-900'>刪除</button>
-                                    </form>
-                                </td>
-                                <?php
-                                    } else {
-                                ?>
-                                <td class='px-6 py-4 whitespace-nowrap'></td>
-                                <?php
-                                    }
-                                ?>
-                                
+
                             </tr>
                             <?php
                             $j++;

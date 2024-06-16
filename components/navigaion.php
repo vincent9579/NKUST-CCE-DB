@@ -16,69 +16,71 @@
             <ul
                 class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                    <?php
-                    if (basename($_SERVER['PHP_SELF']) == 'index.php') {
-                        echo '<a href="index.php"
+                    <?php if (basename($_SERVER['PHP_SELF']) == 'index.php'): ?>
+                        <a href="index.php"
                             class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                            aria-current="page">主頁</a>';
-                    } else {
-                        echo '<a href="index.php"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">主頁</a>';
-                    }
-                    ?>
+                            aria-current="page">主頁</a>
+                    <?php else: ?>
+                        <a href="index.php"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">主頁</a>
+                    <?php endif; ?>
                 </li>
                 <li>
-                    <?php
-                    if (basename($_SERVER['PHP_SELF']) == 'classroom_status.php') {
-                        echo '<a href="classroom_status.php"
+                    <?php if (basename($_SERVER['PHP_SELF']) == 'classroom_status.php'): ?>
+                        <a href="classroom_status.php"
                             class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                            aria-current="page">查詢教室狀況</a>';
-                    } else {
-                        echo '<a href="classroom_status.php"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">查詢教室狀況</a>';
-                    }
-                    ?>
+                            aria-current="page">查詢教室狀況</a>
+                    <?php else: ?>
+                        <a href="classroom_status.php"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">查詢教室狀況</a>
+                    <?php endif; ?>
                 </li>
                 <li>
-                    <?php
-                    if (basename($_SERVER['PHP_SELF']) == 'rent_classroom.php') {
-                        echo '<a href="rent_classroom.php"
-                            class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                            aria-current="page">租借教室</a>';
-                    } else {
-                        echo '<a href="rent_classroom.php"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">租借教室</a>';
-                    }
-                    ?>
+                    <?php if ($is_admin == "N"): ?>
+                        <?php if (basename($_SERVER['PHP_SELF']) == 'rent_classroom.php'): ?>
+                            <a href="rent_classroom.php"
+                                class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                                aria-current="page">租借教室</a>
+                        <?php else: ?>
+                            <a href="rent_classroom.php"
+                                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">租借教室</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </li>
                 <li>
-                    <?php
-                    if (basename($_SERVER['PHP_SELF']) == 'rental_record.php') {
-                        echo '<a href="rental_record.php"
-                            class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                            aria-current="page">租借紀錄</a>';
-                    } else {
-                        echo '<a href="rental_record.php"
-                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">租借紀錄</a>';
-                    }
-                    ?>
+                    <?php if ($status == "valid"): ?>
+                        <?php if ($is_admin == "N"): ?>
+                            <?php if (basename($_SERVER['PHP_SELF']) == 'rental_record.php'): ?>
+                                <a href="rental_record.php"
+                                    class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                                    aria-current="page">租借紀錄</a>
+                            <?php else: ?>
+                                <a href="rental_record.php"
+                                    class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">租借紀錄</a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </li>
-                <?php
-                if ($status == "valid" && $is_admin == 'Y') {
-                    echo '<li>
+                <?php if ($status == "valid" && $is_admin == 'Y'): ?>
+                    <li>
                         <a href="admin_center.php"
                             class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">管理介面</a>
-                    </li>';
-                }
-                ?>
+                    </li>
+                <?php endif; ?>
                 <li>
-                    <?php
-                    if ($status == "valid") {
-                        echo '<a href="logout.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登出</a>';
-                    } else {
-                        echo '<a href="login.html" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登入</a>';
-                    }
-                    ?>
+                    <?php if ($status == "valid"): ?>
+                        <a href="logout.php"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登出</a>
+                    <?php else: ?>
+                        <?php if (basename($_SERVER['PHP_SELF']) == 'login.php'): ?>
+                            <a href="login.php"
+                                class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                                aria-current="page">登入</a>
+                        <?php else: ?>
+                            <a href="login.php"
+                                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">登入</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </li>
             </ul>
         </div>

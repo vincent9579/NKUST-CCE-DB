@@ -4,6 +4,7 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
@@ -281,17 +282,24 @@ while ($row = $rental->fetch_assoc()) {
 
     <!-- 選擇教室 -->
     <?php if (isset($_SESSION['warn'])): ?>
-        <div id="alert-border-2" class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800" role="alert">
-            <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        <div id="alert-border-2"
+            class="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800"
+            role="alert">
+            <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
             </svg>
             <div class="ms-3 text-sm font-medium">
                 教室不存在! 請確認輸入的教室編號是否正確。
             </div>
-            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"  data-dismiss-target="#alert-border-2" aria-label="Close">
+            <button type="button"
+                class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
+                data-dismiss-target="#alert-border-2" aria-label="Close">
                 <span class="sr-only">Dismiss</span>
                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                 </svg>
             </button>
         </div>
@@ -322,17 +330,17 @@ while ($row = $rental->fetch_assoc()) {
                                 placeholder="教室編號" name="classroom" />
 
                         </div>
-                        
+
                         <button type="submit"
                             class="w-full mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </form>
 
                 </ul>
-                
+
             </div>
         </div>
     <?php else: ?>
-        <?php 
+        <?php
         $periodToTime = [
             "0" => "08:10-09:00",
             "1" => "09:10-10:00",
@@ -354,7 +362,8 @@ while ($row = $rental->fetch_assoc()) {
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <div class="overflow-x-auto">
                     <?php if ($status == "valid"): ?>
-                        <button class="w-24 h-10 bg-blue-700 text-white rounded-lg" onclick="getCheckedCheckboxes()">租借教室</button>
+                        <button class="w-24 h-10 bg-blue-700 text-white rounded-lg"
+                            onclick="getCheckedCheckboxes()">租借教室</button>
                         <form id="redirectForm" method="POST" action="rent_classroom.php" style="display: none;">
                             <input type="hidden" name="data" id="hiddenData">
                         </form>
@@ -364,7 +373,8 @@ while ($row = $rental->fetch_assoc()) {
                     <a href="classroom_status.php" class="text-blue-700 hover:underline dark:text-blue-500">取消查詢</a>
 
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 overflow-auto">
-                        <thead class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
+                        <thead
+                            class="text-xs text-gray-900 dark:text-white uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 whitespace-nowrap">
                             <tr>
                                 <th scope="col" class="px-6 py-3">節次</th>
                                 <th scope="col" class="px-6 py-3">星期一</th>
@@ -394,13 +404,25 @@ while ($row = $rental->fetch_assoc()) {
                                             <?php if (isset($timeTable[$j][$i])): ?>
                                                 <?php $row = $timeTable[$j][$i]; ?>
                                                 <?php if ($row['course_name'] == "租借"): ?>
-                                                    <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox" name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>" data-column="<?= $j ?>" data-row="<?= $i ?>" onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
+                                                    <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox"
+                                                        name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>"
+                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>"
+                                                        data-column="<?= $j ?>" data-row="<?= $i ?>"
+                                                        onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
                                                 <?php endif; ?>
                                                 <?= $row['course_name'] ?><br>
                                                 <?= $row['instructor'] ?><br>
                                                 <?= $row['major'] ?>
                                             <?php else: ?>
-                                                <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox" name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>" data-column="<?= $j ?>" data-row="<?= $i ?>" onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
+                                                <?php if ($status != "invalid"): ?>
+                                                    <?php if ($is_admin == "N"): ?>
+                                                        <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox"
+                                                            name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>"
+                                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>"
+                                                            data-column="<?= $j ?>" data-row="<?= $i ?>"
+                                                            onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
                                     <?php endfor; ?>
@@ -525,4 +547,3 @@ while ($row = $rental->fetch_assoc()) {
 </body>
 
 </html>
-

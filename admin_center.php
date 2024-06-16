@@ -4,6 +4,7 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
@@ -16,15 +17,12 @@ if ($is_admin != 'Y') {
 
 $conn = require_once "config.php";
 
-// 从数据库中选择所有租借记录
 $sql = "SELECT * FROM rental_table ORDER BY rent_date ASC, rent_period ASC";
 $result = $conn->query($sql);
 
-// 创建一个空数组来存储租借记录
 $rental_list = array();
 while ($row = $result->fetch_assoc()) {
     $temp[] = $row['rent_period'];
-    // 同create_time的资料合并
     if (isset($rental_list[$row['create_time']])) {
         if ($row['rent_period'] == 'A') {
             if ($rental_list[$row['create_time']]['start_period'] <= "4") {
@@ -77,27 +75,29 @@ while ($row = $result->fetch_assoc()) {
     <!-- navigation -->
     <?php include './components/navigaion.php'; ?>
 
-    <!-- 在这里插入你的内容 -->
     <?php if (count($rental_list) > 0): ?>
-    <form action="approve.php" method="post">
-        <div class="relative overflow-x-auto shadow-md sm:p-6 lg:p-8">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-collapse border border-gray-200 dark:border-gray-700">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">申請時間</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">使用者名字</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借教室</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借日期</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借時段</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借原因</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借狀態</th>
-                        <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">審核</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <form action="approve.php" method="post">
+            <div class="relative overflow-x-auto shadow-md sm:p-6 lg:p-8">
+                <table
+                    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-collapse border border-gray-200 dark:border-gray-700">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">申請時間</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">使用者名字</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借教室</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借日期</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借時段</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借原因</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">租借狀態</th>
+                            <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">審核</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <?php else: ?>
                         <div class="flex items-baseline justify-center min-h-screen">
-                            <h3 class="mb-4 text-4xl font-extrabold leading tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">No rental records</h3>
+                            <h3
+                                class="mb-4 text-4xl font-extrabold leading tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">
+                                No rental records</h3>
                         </div>
                     <?php endif; ?>
                     <?php $conn->close(); ?>
@@ -118,12 +118,14 @@ while ($row = $result->fetch_assoc()) {
                             <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $rental['rent_status']; ?></td>
                             <td class="bg-white dark:bg-gray-800 px-6 py-3">
                                 <?php if ($rental['rent_status'] == 'U'): ?>
-                                    <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="status[<?php echo $rental['create_time']; ?>]">
+                                    <select
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        name="status[<?php echo $rental['create_time']; ?>]">
                                         <option value="Y">通過</option>
                                         <option value="N">不通過</option>
                                     </select>
                                 <?php else: ?>
-                                    <?php echo $rental['rent_status']=="Y" ? "已審核(通過)":"已審核(不通過)"; ?>
+                                    <?php echo $rental['rent_status'] == "Y" ? "已審核(通過)" : "已審核(不通過)"; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -132,7 +134,8 @@ while ($row = $result->fetch_assoc()) {
             </table>
             <?php if (count($rental_list) > 0): ?>
                 <div class="flex justify-center mt-4">
-                    <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">送出</button>
+                    <button type="submit"
+                        class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">送出</button>
                 </div>
             <?php endif; ?>
         </div>

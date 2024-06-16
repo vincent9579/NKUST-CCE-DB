@@ -4,10 +4,18 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
+    if ($is_admin == 'Y') {
+        header("Location: admin_center.php");
+        exit();
+    }
 }
+
+
+
 $conn = require_once ('config.php');
 if ($conn) {
     $stmt = $conn->prepare("SELECT st.std_name FROM user_data ud JOIN student_account sa ON ud.user_id = sa.user_id JOIN student_table st ON sa.std_id = st.std_id WHERE ud.user_name = ?");

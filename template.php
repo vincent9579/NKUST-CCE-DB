@@ -4,6 +4,7 @@ if (!isset($_SESSION)) {
 }
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
+    $is_admin = "N";
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
