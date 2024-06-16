@@ -40,7 +40,7 @@ mysqli_close($conn);
 
 // 當密碼輸入"錯誤"傳回跳出視窗，並回首頁
 function message_alert($message) {
-    echo "<script>alert('$message'); window.location.href='index.php';</script>";
+    echo "<script>alert('$message'); window.location.href='login.php';</script>";
     return true;
 }
 

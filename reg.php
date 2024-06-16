@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // 跳出提示框
         echo "<script>alert('Registration successful.');</script>";
         // Redirect to index page
-        header("Location: index.php");
+        header("Location: login.php");
         exit();
     } catch (Exception $e) {
         // Rollback transaction

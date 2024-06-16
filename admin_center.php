@@ -141,6 +141,97 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </form>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const statusSelectors = document.querySelectorAll('select[name^="status"]');
+
+            // Function to initialize statuses to handle conflicts on page load
+            function initializeStatuses() {
+                const rentalData = {};
+
+                // Group rental requests by classroom, date, and period
+                statusSelectors.forEach(selector => {
+                    const createTime = selector.name.match(/\[(.*?)\]/)[1];
+                    const status = selector.value;
+                    const row = selector.closest('tr');
+                    const classroom = row.querySelector('td:nth-child(3)').innerText;
+                    const rentDate = row.querySelector('td:nth-child(4)').innerText;
+                    const rentPeriod = row.querySelector('td:nth-child(5)').innerText;
+
+                    const key = `${classroom}-${rentDate}-${rentPeriod}`;
+
+                    if (!rentalData[key]) {
+                        rentalData[key] = [];
+                    }
+
+                    rentalData[key].push({
+                        createTime,
+                        selector,
+                        row,
+                    });
+                });
+
+                // For each group of conflicting rentals, approve the first one, and disapprove the rest
+                for (let key in rentalData) {
+                    const rentals = rentalData[key];
+                    let hasApproved = false;
+
+                    rentals.forEach(rental => {
+                        if (!hasApproved) {
+                            rental.selector.value = 'Y';
+                            hasApproved = true;
+                        } else {
+                            rental.selector.value = 'N';
+                        }
+                    });
+                }
+            }
+
+            // Function to handle status change dynamically
+            function handleStatusChange(event) {
+                const currentSelector = event.target;
+                const currentCreateTime = currentSelector.name.match(/\[(.*?)\]/)[1];
+                const currentRow = currentSelector.closest('tr');
+                const currentClassroom = currentRow.querySelector('td:nth-child(3)').innerText;
+                const currentRentDate = currentRow.querySelector('td:nth-child(4)').innerText;
+                const currentRentPeriod = currentRow.querySelector('td:nth-child(5)').innerText;
+                const currentStatus = currentSelector.value;
+
+                // Check and update other conflicting rentals
+                statusSelectors.forEach(sel => {
+                    if (sel !== currentSelector) {
+                        const createTime = sel.name.match(/\[(.*?)\]/)[1];
+                        const row = sel.closest('tr');
+                        const classroom = row.querySelector('td:nth-child(3)').innerText;
+                        const rentDate = row.querySelector('td:nth-child(4)').innerText;
+                        const rentPeriod = row.querySelector('td:nth-child(5)').innerText;
+
+                        if (
+                            currentClassroom === classroom &&
+                            currentRentDate === rentDate &&
+                            currentRentPeriod === rentPeriod
+                        ) {
+                            if (currentStatus === 'Y') {
+                                sel.value = 'N'; // Set conflicting rentals to 'N'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize statuses on page load
+            initializeStatuses();
+
+            // Add event listener for status changes to handle dynamic conflicts
+            statusSelectors.forEach(selector => {
+                selector.addEventListener('change', handleStatusChange);
+            });
+        });
+    </script>
+
+
+
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
