@@ -80,7 +80,7 @@ if ($stmt) {
     }
 }
 
-$query = "SELECT * FROM rental_table WHERE classroom = ?";
+$query = "SELECT * FROM rental_table WHERE classroom = ? AND rent_status = 'Y'";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('s', $classroom);
 $stmt->execute();
