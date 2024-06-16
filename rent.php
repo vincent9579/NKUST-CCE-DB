@@ -26,36 +26,51 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $A = "A";
 
+    // 验证是否存在冲突
+    $query = "SELECT * FROM rental_table WHERE classroom = ? AND rent_date = ? AND rent_status = 'Y'";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $classroom, $rent_date);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        http_response_code(400);
+        echo json_encode(array("error" => "The requested date and classroom are already booked."));
+        $conn->rollback();
+        exit();
+    }
+
+    // Proceed with the existing insertion logic...
+
     if (($start_period == "A") && ($end_period == "A")) {
         $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
         try {
             $stmt->execute();
         } catch (mysqli_sql_exception $e) {
-            if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+            if ($e->getCode() == 1062) {
                 http_response_code(500);
                 echo json_encode(array("error" => "Duplicate entry"));
                 $conn->rollback();
                 exit();
             } else {
-                throw $e; // rethrow the exception if it's not a duplicate entry error
+                throw $e;
             }
         }
     } else {
         if ($start_period == 4 && $end_period == 5) {
-
             $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);
             try {
                 $stmt->execute();
             } catch (mysqli_sql_exception $e) {
-                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                if ($e->getCode() == 1062) {
                     http_response_code(500);
                     echo json_encode(array("error" => "Duplicate entry"));
                     $conn->rollback();
                     exit();
                 } else {
-                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                    throw $e;
                 }
             }
         }
@@ -65,13 +80,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             try {
                 $stmt->execute();
             } catch (mysqli_sql_exception $e) {
-                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                if ($e->getCode() == 1062) {
                     http_response_code(500);
                     echo json_encode(array("error" => "Duplicate entry"));
                     $conn->rollback();
                     exit();
                 } else {
-                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                    throw $e;
                 }
             }
             $end_period = "4";
@@ -82,13 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             try {
                 $stmt->execute();
             } catch (mysqli_sql_exception $e) {
-                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                if ($e->getCode() == 1062) {
                     http_response_code(500);
                     echo json_encode(array("error" => "Duplicate entry"));
                     $conn->rollback();
                     exit();
                 } else {
-                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                    throw $e;
                 }
             }
             $start_period = "5";
@@ -100,17 +115,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             try {
                 $stmt->execute();
             } catch (mysqli_sql_exception $e) {
-                if ($e->getCode() == 1062) { // 1062 is the error code for duplicate entry
+                if ($e->getCode() == 1062) {
                     http_response_code(500);
                     echo json_encode(array("error" => "Duplicate entry"));
                     $conn->rollback();
                     exit();
                 } else {
-                    throw $e; // rethrow the exception if it's not a duplicate entry error
+                    throw $e;
                 }
             }
         }
     }
+
     $conn->commit();
     $conn->close();
 }
@@ -122,7 +138,5 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $stmt->execute();
     $stmt->close();
     $conn->close();
-    header("Location: rental_record.php");
 }
-
 ?>

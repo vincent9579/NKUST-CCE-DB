@@ -536,6 +536,45 @@ while ($row = $rental->fetch_assoc()) {
         }
     </script>
 
+    <script>
+        // JavaScript to populate the date select field
+        document.addEventListener("DOMContentLoaded", function () {
+            var dateSelect = document.getElementById('date');
+            var today = new Date();
+
+            function formatDate(date) {
+                var d = new Date(date);
+                var month = '' + (d.getMonth() + 1);
+                var day = '' + d.getDate();
+                var year = d.getFullYear();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+
+                return [year, month, day].join('/');
+            }
+
+            // Fetch unavailable dates from the server
+            fetch('unavailable_dates.php')
+                .then(response => response.json())
+                .then(data => {
+                    let unavailableDates = data; // Dates where rent_status = 'Y'
+                    for (let i = 0; i < 28; i++) {
+                        let date = new Date();
+                        date.setDate(today.getDate() + i);
+                        let formattedDate = formatDate(date);
+                        if (!unavailableDates.includes(formattedDate)) {
+                            let option = document.createElement('option');
+                            option.value = formattedDate;
+                            option.textContent = formattedDate;
+                            dateSelect.appendChild(option);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching unavailable dates:', error));
+        });
+    </script>
+
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
