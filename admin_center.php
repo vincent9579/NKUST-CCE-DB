@@ -61,6 +61,7 @@ while ($row = $result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -102,7 +103,8 @@ while ($row = $result->fetch_assoc()) {
                                 aria-labelledby="dropdownRadioButton">
                                 <li>
                                     <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        <input id="filter-radio-example-1" type="radio" value="all" name="filter-radio" checked
+                                        <input id="filter-radio-example-1" type="radio" value="all" name="filter-radio"
+                                            checked
                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label for="filter-radio-example-1"
                                             class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">全部</label>
@@ -126,7 +128,7 @@ while ($row = $result->fetch_assoc()) {
                                             class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">未審核</label>
                                     </div>
                                 </li>
-                                
+
                             </ul>
                         </div>
                     </div>
@@ -171,6 +173,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <path
                                                         d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                                                 </svg></a>
+                                        </div>
                                     </th>
                                     <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center cursor-pointer" onclick="sortTable(2)">
@@ -181,6 +184,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <path
                                                         d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                                                 </svg></a>
+                                        </div>
                                     </th>
                                     <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center cursor-pointer" onclick="sortTable(3)">
@@ -191,6 +195,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <path
                                                         d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                                                 </svg></a>
+                                        </div>
                                     </th>
                                     <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center cursor-pointer" onclick="sortTable(4)">
@@ -201,6 +206,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <path
                                                         d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                                                 </svg></a>
+                                        </div>
                                     </th>
                                     <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center cursor-pointer" onclick="sortTable(5)">
@@ -211,6 +217,7 @@ while ($row = $result->fetch_assoc()) {
                                                     <path
                                                         d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                                                 </svg></a>
+                                        </div>
                                     </th>
                                     <th class="px-6 py-3 border border-gray-200 dark:border-gray-700">審核</th>
                                 </tr>
@@ -254,7 +261,7 @@ while ($row = $result->fetch_assoc()) {
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                            
+
                         </tbody>
                     </table>
                     <!-- 靠右 -->
@@ -262,7 +269,7 @@ while ($row = $result->fetch_assoc()) {
                         <button type="submit"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">送出</button>
                     </div>
-                    
+
                 </form>
             </div>
         </div>
