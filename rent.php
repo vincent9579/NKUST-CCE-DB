@@ -138,5 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $stmt->execute();
     $stmt->close();
     $conn->close();
+    header("Location: rental_record.php");
 }
 ?>

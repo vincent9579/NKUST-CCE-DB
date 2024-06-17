@@ -428,7 +428,7 @@ while ($row = $rental->fetch_assoc()) {
             </div>
         </div>
     <?php endif; ?>
-
+    <?php include './components/footer.php'; ?>
     <script>
         function getCheckedCheckboxes() {
             var classroom = "<?= $classroom ?>";

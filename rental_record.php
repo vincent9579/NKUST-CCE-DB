@@ -181,7 +181,7 @@ if (!isset($_SESSION['username'])) {
         </div>
     </div>
 
-
+    <?php include './components/footer.php'; ?>
 
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
