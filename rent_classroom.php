@@ -18,6 +18,7 @@ if (!isset($_SESSION['username'])) {
 
 $conn = require_once ('config.php');
 if ($conn) {
+    // Get the student name
     $stmt = $conn->prepare("SELECT st.std_name FROM user_data ud JOIN student_account sa ON ud.user_id = sa.user_id JOIN student_table st ON sa.std_id = st.std_id WHERE ud.user_name = ?");
     $stmt->bind_param("s", $_SESSION['username']);
     $stmt->execute();
@@ -67,7 +68,7 @@ if (is_array($_GET) && count($_GET) > 0) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
+    <title>資源租借系統 - 租借教室</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

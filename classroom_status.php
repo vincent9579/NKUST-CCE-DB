@@ -35,7 +35,7 @@ if ($classroom) {
     $params[] = $classroom;
 }
 
-// 獲取教室狀況
+// get course_table
 $query = "SELECT * FROM course_table $where ORDER BY weekday, period";
 $stmt = $conn->prepare($query);
 $timeTable = [[], [], [], [], [], [], []];
@@ -48,7 +48,7 @@ if ($stmt) {
     $result = $stmt->get_result();
     $stmt->close();
 
-    // 將result
+    // 依照星期幾與節次填入課表
     while ($row = $result->fetch_assoc()) {
         $chinese_weekdays = [
             '一' => 1,
@@ -112,7 +112,6 @@ while ($row = $rental->fetch_assoc()) {
         $timeTable[$weekday - 1][4]['major'] = $rent_date;
     } else {
         if ($period < '5') {
-            // string to int
             $period = (int) $period;
             if (isset($timeTable[$weekday - 1][$period - 1])) {
                 if ($timeTable[$weekday - 1][$period - 1]['instructor'] != $row['username']) {
@@ -151,7 +150,7 @@ while ($row = $rental->fetch_assoc()) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
+    <title>資源租借系統 - 教室狀態查詢</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -165,6 +164,7 @@ while ($row = $rental->fetch_assoc()) {
     </script>
 
     <script>
+        // 限制checkbox數量
         function limitCheckbox(checkbox, column, row) {
             const maxChecked = 3;
             const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -197,6 +197,7 @@ while ($row = $rental->fetch_assoc()) {
             checkContinuity2(checkedCheckboxes);
         }
 
+        // 限制checkbox只能連續
         function checkContinuity(checkedCheckboxes, currentColumn, currentRow) {
             if (checkedCheckboxes.length === 0) {
                 return;

@@ -1,46 +1,39 @@
 <?php
-// 启动会话
 if (!isset($_SESSION)) {
     session_start();
 }
 
-// 检查是否已登录
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-// 检查是否为管理员
 $is_admin = $_SESSION['is_admin'];
 if ($is_admin != 'Y') {
     header("Location: index.php");
     exit();
 }
 
-// 数据库连接
 $conn = require_once 'config.php';
-
-// 初始化变量
 $user_id = $user_name = $user_password = $is_admin = "";
 $user_type = "";
 
-// 处理表单提交
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['edit_user'])) {
-        // 编辑用户
+        // edit user
         $user_id = $_POST['user_id'];
         $user_name = $_POST['user_name'];
         $is_admin = $_POST['is_admin'];
         $user_type = $_POST['user_type'];
 
-        // 更新 user_data 表
+        // Update user_data table
         $sql = "UPDATE user_data SET user_name=?, is_admin=? WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $user_name, $is_admin, $user_id);
         $stmt->execute();
 
         if ($user_type == 'student') {
-            // 更新 student_account 和 student_table 表
+            // Update student_account and student_table table
             $std_id = $_POST['std_id'];
             $std_name = $_POST['std_name'];
             $std_departments = $_POST['std_departments'];
@@ -55,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("sss", $std_name, $std_departments, $std_id);
             $stmt->execute();
         } elseif ($user_type == 'staff') {
-            // 更新 staff_account 和 staff_table 表
+            // Update staff_account and staff_table table
             $staff_id = $_POST['staff_id'];
             $staff_name = $_POST['staff_name'];
             $staff_room = $_POST['staff_room'];
@@ -72,10 +65,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute();
         }
     } elseif (isset($_POST['delete_user'])) {
-        // 删除用户
+        // delete user
         $user_id = $_POST['user_id'];
 
-        // 判斷為學生或是員工
+        // get user type
         $sql = "SELECT * FROM student_account WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
@@ -98,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // 删除与学生或员工关联的记录
+        // delete user data
         if ($user_type == 'student') {
             $sql = "DELETE FROM student_account WHERE user_id=?";
             $stmt = $conn->prepare($sql);
@@ -121,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute();
         }
 
-        // 删除用户
+        // delete user
         $sql = "DELETE FROM user_data WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
@@ -130,12 +123,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 
-// 获取用户数据以显示在界面上
+// get all users
 $users = $conn->query("SELECT * FROM user_data");
 $students = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.std_id, st.std_name, st.std_departments
-                          FROM user_data u 
-                          JOIN student_account s ON u.user_id = s.user_id
-                          JOIN student_table st ON s.std_id = st.std_id");
+                        FROM user_data u 
+                        JOIN student_account s ON u.user_id = s.user_id
+                        JOIN student_table st ON s.std_id = st.std_id");
 $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, st.staff_name, st.staff_room, st.staff_department
                         FROM user_data u 
                         JOIN staff_account s ON u.user_id = s.user_id
@@ -148,7 +141,7 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management</title>
+    <title>資源租借系統 - 用戶管理</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"
         integrity="sha512-u3fPA7V8qQmhBPNT5quvaXVa1mnnLSXUep5PS1qo5NRzHwG19aHmNJnj1Q8hpA/nBWZtZD4r4AX6YOt5ynLN2g=="
@@ -191,27 +184,27 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Username
+                                帳號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Student ID
+                                學生編號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
+                                姓名
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Department
+                                科系
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Admin
+                                是否為管理員
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
+                                動作
                             </th>
                         </tr>
                     </thead>
@@ -240,10 +233,10 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <button class="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                                        type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">Edit
+                                        type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">編輯
                                     </button>
                                     <button class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                                        onclick="deleteUser(<?php echo $row['user_id']; ?>)">Delete
+                                        onclick="deleteUser(<?php echo $row['user_id']; ?>)">刪除
                                     </button>
                                 </td>
                             </tr>
@@ -258,31 +251,31 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Username
+                                帳號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Staff ID
+                                員工編號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
+                                姓名
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Room
+                                上班地點
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Department
+                                隸屬部門
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Admin
+                                是否為管理員
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
+                                動作
                             </th>
                         </tr>
                     </thead>
@@ -315,10 +308,10 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <button class="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                                        type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">Edit
+                                        type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">編輯
                                     </button>
                                     <button class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                                        onclick="deleteUser(<?php echo $row['user_id']; ?>)">Delete
+                                        onclick="deleteUser(<?php echo $row['user_id']; ?>)">刪除
                                     </button>
                                 </td>
                             </tr>

@@ -69,8 +69,7 @@ $result = $conn->query($query);
     <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
         <form method="GET" action="" class="flex flex-wrap space-x-4">
             <div class="mb-4 flex-1">
-                <label for="limit" class="block text-sm font-medium text-gray-900 dark:text-white">Records per
-                    page:</label>
+                <label for="limit" class="block text-sm font-medium text-gray-900 dark:text-white">每一頁顯示的記錄數</label>
                 <select name="limit" id="limit"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="10" <?= $limit == 10 ? 'selected' : ''; ?>>10</option>
@@ -79,10 +78,10 @@ $result = $conn->query($query);
                 </select>
             </div>
             <div class="mb-4 flex-1">
-                <label for="colleage" class="block text-sm font-medium text-gray-900 dark:text-white">colleage:</label>
+                <label for="colleage" class="block text-sm font-medium text-gray-900 dark:text-white">學院:</label>
                 <select name="colleage" id="colleage"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option selected value="">All</option>
+                    <option selected value="">顯示全部學院</option>
                     <?php foreach ($colleages as $c): ?>
                         <option value="<?= $c ?>" <?= $colleage == $c ? 'selected' : '' ?>><?= $c ?></option>
                     <?php endforeach; ?>
@@ -90,7 +89,7 @@ $result = $conn->query($query);
             </div>
             <div class="flex items-end mb-4">
                 <button type="submit"
-                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">Filter</button>
+                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">過濾</button>
             </div>
         </form>
     </div>

@@ -1,6 +1,4 @@
 <?php
-// login.php 負責處理登入的操作
-// config.php 是 DB 設定檔
 $conn = require_once "config.php";
 session_start();
 
@@ -38,13 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // 關閉 DB 連接
 mysqli_close($conn);
 
-// 當密碼輸入"錯誤"傳回跳出視窗，並回首頁
 function message_alert($message) {
     echo "<script>alert('$message'); window.location.href='login.php';</script>";
     return true;
 }
 
-// 當密碼輸入"成功"傳回跳出視窗，並至 welcome.php
 function message_success($message) {
     echo "<script>alert('$message'); window.location.href='index.php';</script>";
     return true;

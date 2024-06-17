@@ -65,14 +65,14 @@ if (!isset($_SESSION['username'])) {
                                         </label>
                                     <input type="text" name="std_id" id="std_id"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="201900000" required>
+                                        placeholder="C123456789" required>
                                 </div>
                                 <div>
                                     <label for="std_departments"
                                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">系所</label>
                                     <input type="text" name="std_departments" id="std_departments"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Computer Science" required>
+                                        placeholder="資訊工程系" required>
                                 </div>
                                 <div>
                                     <label for="password"

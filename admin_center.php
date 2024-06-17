@@ -59,7 +59,7 @@ while ($row = $result->fetch_assoc()) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title</title>
+    <title>資源租借系統 - 管理介面</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     
     <script>
@@ -275,6 +275,7 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </div>
     <script>
+        // Filter and search table
         document.addEventListener('DOMContentLoaded', function () {
             const filterRadios = document.getElementsByName('filter-radio');
             const searchInput = document.getElementById('table-search');
@@ -286,6 +287,7 @@ while ($row = $result->fetch_assoc()) {
 
             searchInput.addEventListener('input', filterTable);
 
+            // Function to filter table rows based on filter and search input
             function filterTable() {
                 const filterValue = Array.from(filterRadios).find(radio => radio.checked).value;
                 const searchValue = searchInput.value.toLowerCase();
