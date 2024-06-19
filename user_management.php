@@ -341,10 +341,13 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 是否為管理員
                             </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                動作
-                            </th>
+                            <?php if ($_SESSION['username'] == 'admin') { ?>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    動作
+                                </th>
+                            <?php } ?>
+
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -374,14 +377,17 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                                     <span class="cell" data-type="text"
                                         data-name="is_admin"><?php echo $row['is_admin']; ?></span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    <button class="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                                        type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">編輯
-                                    </button>
-                                    <button class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                                        onclick="deleteUser(<?php echo $row['user_id']; ?>)">刪除
-                                    </button>
-                                </td>
+                                <?php if ($_SESSION['username'] == 'admin') { ?>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <button class="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                                            type="button" onclick="editUser(<?php echo $row['user_id']; ?>)">編輯
+                                        </button>
+                                        <button class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                            onclick="deleteUser(<?php echo $row['user_id']; ?>)">刪除
+                                        </button>
+                                    </td>
+                                <?php } ?>
+
                             </tr>
                         <?php } ?>
                     </tbody>
