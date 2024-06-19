@@ -43,17 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Commit transaction
         $conn->commit();
-        // 跳出提示框
-        echo "<script>alert('Registration successful.');</script>";
-        // Redirect to index page
-        header("Location: login.php");
+        // 跳出提示框 click ok 跳轉到 login.php
+        echo "<script>alert('Registration successful!'); window.location.href='login.php';</script>";
+    
+        
         exit();
     } catch (Exception $e) {
         // Rollback transaction
         $conn->rollback();
-        // 跳出提示框
-        echo "<script>alert('Registration failed: " . $e->getMessage() . "');</script>";
-        header("Location: register.php");
+        // 跳出提示框 click ok 跳轉到 register.php
+        echo "<script>alert('Registration failed!'); window.location.href='register.php';</script>";
     }
 
     $conn->close();
