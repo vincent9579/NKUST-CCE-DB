@@ -15,25 +15,120 @@ if ($is_admin != 'Y') {
 }
 
 $conn = require_once 'config.php';
+
+// get staff id
+$sql = "SELECT 
+    u.user_name, 
+    s.staff_id
+FROM 
+    user_data u
+JOIN 
+    staff_account sa ON u.user_id = sa.user_id
+JOIN 
+    staff_table s ON sa.staff_id = s.staff_id
+WHERE 
+    u.user_name = ?;
+";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $_SESSION['username']);
+$stmt->execute();
+$staff_info = $stmt->get_result()->fetch_assoc();
+$staff_id = $staff_info['staff_id'];
+
+// 查詢當前員工的資料
+$sql = "SELECT staff_department FROM staff_table WHERE staff_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $staff_id);
+$stmt->execute();
+$staff_info = $stmt->get_result()->fetch_assoc();
+$current_staff_department = $staff_info['staff_department'];
+
+// 查詢所有教室和對應的學院
+$classroom_colleage_map = [];
+$sql = "SELECT classroom, colleage FROM classroom_table";
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $classroom_colleage_map[$row['classroom']] = $row['colleage'];
+}
+
+// 查詢所有租借記錄
+$sql = "SELECT * FROM rental_table ORDER BY create_time ASC, username ASC, rent_date ASC, rent_period ASC";
+$result = $conn->query($sql);
+
+$rental_list = array();
+
+while ($row = $result->fetch_assoc()) {
+    // 創建一個唯一鍵
+    $unique_key = $row['create_time'] . '_' . $row['username'];
+
+    if (isset($rental_list[$unique_key])) {
+        if ($row['rent_period'] == 'A') {
+            if ($rental_list[$unique_key]['start_period'] <= "4") {
+                if ($rental_list[$unique_key]['end_period'] == '5') {
+                    continue;
+                } else {
+                    $rental_list[$unique_key]['end_period'] = 'A';
+                }
+            } else {
+                $rental_list[$unique_key]['start_period'] = 'A';
+            }
+        } else {
+            $rental_list[$unique_key]['end_period'] = $row['rent_period'];
+        }
+    } else {
+        // 新記錄，創建新條目
+        $rental_list[$unique_key] = array(
+            'create_time' => $row['create_time'],
+            'username' => $row['username'],
+            'classroom' => $row['classroom'],
+            'rent_date' => $row['rent_date'],
+            'start_period' => $row['rent_period'],
+            'end_period' => $row['rent_period'],
+            'reason' => $row['reason'],
+            'rent_status' => $row['rent_status']
+        );
+    }
+}
+
+// 計算租借狀態為 'U' 的唯一組合數量
+$sql = "SELECT COUNT(DISTINCT r.create_time, r.username) AS unique_count 
+        FROM rental_table r
+        JOIN classroom_table c ON r.classroom = c.classroom
+        WHERE r.rent_status = 'U' AND (c.colleage = ? OR ? = 'ALL')";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $current_staff_department, $current_staff_department);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// 獲取查詢結果
+if ($result) {
+    $row = $result->fetch_assoc();
+    $unique_count = $row['unique_count'];
+} else {
+    // 如果查詢失敗，輸出錯誤信息
+    $unique_count = "Er";
+}
+
 $user_id = $user_name = $user_password = $is_admin = "";
 $user_type = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['edit_user'])) {
-        // edit user
+        // 编辑用户
         $user_id = $_POST['user_id'];
         $user_name = $_POST['user_name'];
         $is_admin = $_POST['is_admin'];
         $user_type = $_POST['user_type'];
 
-        // Update user_data table
+        // 更新 user_data 表
         $sql = "UPDATE user_data SET user_name=?, is_admin=? WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssi", $user_name, $is_admin, $user_id);
         $stmt->execute();
 
         if ($user_type == 'student') {
-            // Update student_account and student_table table
+            // 更新 student_account 和 student_table 表
             $std_id = $_POST['std_id'];
             $std_name = $_POST['std_name'];
             $std_departments = $_POST['std_departments'];
@@ -48,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("sss", $std_name, $std_departments, $std_id);
             $stmt->execute();
         } elseif ($user_type == 'staff') {
-            // Update staff_account and staff_table table
+            // 更新 staff_account 和 staff_table 表
             $staff_id = $_POST['staff_id'];
             $staff_name = $_POST['staff_name'];
             $staff_room = $_POST['staff_room'];
@@ -126,67 +221,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-    }// delete user
-    $user_id = $_POST['user_id'];
+        // delete user
+        $user_id = $_POST['user_id'];
 
-    // get user type
-    $sql = "SELECT * FROM student_account WHERE user_id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $user_type = 'student';
-        $row = $result->fetch_assoc();
-        $std_id = $row['std_id'];
-    } else {
-        $sql = "SELECT * FROM staff_account WHERE user_id=?";
+        // get user type
+        $sql = "SELECT * FROM student_account WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
-            $user_type = 'staff';
+            $user_type = 'student';
             $row = $result->fetch_assoc();
-            $staff_id = $row['staff_id'];
+            $std_id = $row['std_id'];
+        } else {
+            $sql = "SELECT * FROM staff_account WHERE user_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $user_type = 'staff';
+                $row = $result->fetch_assoc();
+                $staff_id = $row['staff_id'];
+            }
         }
-    }
 
-    // delete user data
-    if ($user_type == 'student') {
-        $sql = "DELETE FROM student_account WHERE user_id=?";
+        // delete user data
+        if ($user_type == 'student') {
+            $sql = "DELETE FROM student_account WHERE user_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+
+            // Ensure no references before deleting
+            $sql = "DELETE FROM student_table WHERE std_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $std_id); // std_id is a string
+            $stmt->execute();
+        } elseif ($user_type == 'staff') {
+            $sql = "DELETE FROM staff_account WHERE user_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+
+            // Ensure no references before deleting
+            $sql = "DELETE FROM staff_classroom WHERE staff_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $staff_id); // staff_id is a string
+            $stmt->execute();
+
+            $sql = "DELETE FROM staff_table WHERE staff_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $staff_id); // staff_id is a string
+            $stmt->execute();
+        }
+
+        // delete user
+        $sql = "DELETE FROM user_data WHERE user_id=?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
-
-        // Ensure no references before deleting
-        $sql = "DELETE FROM student_table WHERE std_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $std_id); // std_id is a string
-        $stmt->execute();
-    } elseif ($user_type == 'staff') {
-        $sql = "DELETE FROM staff_account WHERE user_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-
-        // Ensure no references before deleting
-        $sql = "DELETE FROM staff_classroom WHERE staff_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $staff_id); // staff_id is a string
-        $stmt->execute();
-
-        $sql = "DELETE FROM staff_table WHERE staff_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $staff_id); // staff_id is a string
-        $stmt->execute();
     }
-
-    // delete user
-    $sql = "DELETE FROM user_data WHERE user_id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
+    if (isset($_POST['edit_user']) || isset($_POST['delete_user'])) {
+        $tab = $_POST['tab'];
+        header("Location: user_management.php?tab=$tab");
+        exit();
+    }
 }
 
 
@@ -252,12 +353,13 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                帳號
+                                學生編號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                學生編號
+                                帳號
                             </th>
+
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 姓名
@@ -279,14 +381,15 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php while ($row = $students->fetch_assoc()) { ?>
                             <tr id="row-<?php echo $row['user_id']; ?>">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                    <span class="cell" data-type="text"
-                                        data-name="user_name"><?php echo $row['user_name']; ?></span>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <span class="cell" data-type="text"
                                         data-name="std_id"><?php echo $row['std_id']; ?></span>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="cell" data-type="text"
+                                        data-name="user_name"><?php echo $row['user_name']; ?></span>
+                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <span class="cell" data-type="text"
                                         data-name="std_name"><?php echo $row['std_name']; ?></span>
@@ -319,11 +422,11 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                帳號
+                                員工編號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                員工編號
+                                帳號
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -353,13 +456,14 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php while ($row = $staffs->fetch_assoc()) { ?>
                             <tr id="row-<?php echo $row['user_id']; ?>">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                    <span class="cell" data-type="text"
-                                        data-name="user_name"><?php echo $row['user_name']; ?></span>
-                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <span class="cell" data-type="text"
                                         data-name="staff_id"><?php echo $row['staff_id']; ?></span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="cell" data-type="text"
+                                        data-name="user_name"><?php echo $row['user_name']; ?></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <span class="cell" data-type="text"
@@ -400,6 +504,14 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab) {
+                toggleTable(tab);
+            }
+        };
+
         function toggleTable(type) {
             var studentTable = document.getElementById('student-table');
             var staffTable = document.getElementById('staff-table');
@@ -407,9 +519,11 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
             if (type === 'student') {
                 studentTable.classList.remove('hidden');
                 staffTable.classList.add('hidden');
+                document.getElementById('radio-student').checked = true;
             } else if (type === 'staff') {
                 studentTable.classList.add('hidden');
                 staffTable.classList.remove('hidden');
+                document.getElementById('radio-staff').checked = true;
             }
         }
 
@@ -442,6 +556,11 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                 // 根據需要創建合適的輸入框
                 let inputElement;
                 if (cellType === 'text') {
+                    // std_id 跳過
+                    if (cellName === 'std_id' || cellName === 'staff_id') {
+                        return;
+                    }
+
                     inputElement = document.createElement('input');
                     inputElement.type = 'text';
                     inputElement.value = cellValue;
@@ -508,19 +627,23 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
             inputUserDepartment.value = userDepartment;
             form.appendChild(inputUserDepartment);
 
-
             var inputStaffRoom = document.createElement('input');
             inputStaffRoom.type = 'hidden';
             inputStaffRoom.name = 'staff_room';
             inputStaffRoom.value = staffRoom;
             form.appendChild(inputStaffRoom);
 
-
             var inputEditUser = document.createElement('input');
             inputEditUser.type = 'hidden';
             inputEditUser.name = 'edit_user';
             inputEditUser.value = 'edit_user';
             form.appendChild(inputEditUser);
+
+            var inputTab = document.createElement('input');
+            inputTab.type = 'hidden';
+            inputTab.name = 'tab';
+            inputTab.value = userType;
+            form.appendChild(inputTab);
 
             var submitButton = document.createElement('button');
             submitButton.type = 'submit';
@@ -569,6 +692,8 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
             saveButton.innerText = 'Edit';
             saveButton.className = 'px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600';
             saveButton.setAttribute('onclick', `editUser(${userId})`);
+
+
         }
 
         function deleteUser(userId) {
@@ -588,6 +713,12 @@ $staffs = $conn->query("SELECT u.user_id, u.user_name, u.is_admin, s.staff_id, s
                 inputDeleteUser.name = 'delete_user';
                 inputDeleteUser.value = 'delete_user';
                 form.appendChild(inputDeleteUser);
+
+                var inputTab = document.createElement('input');
+                inputTab.type = 'hidden';
+                inputTab.name = 'tab';
+                inputTab.value = document.querySelector('input[name="bordered-radio"]:checked').value;
+                form.appendChild(inputTab);
 
                 var submitButton = document.createElement('button');
                 submitButton.type = 'submit';

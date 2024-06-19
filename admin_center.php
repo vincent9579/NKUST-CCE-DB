@@ -11,6 +11,7 @@ if (!isset($_SESSION['username'])) {
 } else {
     $status = "valid";
     $is_admin = $_SESSION['is_admin'];
+
 }
 
 // 如果不是管理員，重定向到首頁
@@ -21,6 +22,41 @@ if ($is_admin != 'Y') {
 
 // 連接到數據庫
 $conn = require_once "config.php";
+// get staff id
+$sql = "SELECT 
+    u.user_name, 
+    s.staff_id
+FROM 
+    user_data u
+JOIN 
+    staff_account sa ON u.user_id = sa.user_id
+JOIN 
+    staff_table s ON sa.staff_id = s.staff_id
+WHERE 
+    u.user_name = ?;
+";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $_SESSION['username']);
+$stmt->execute();
+$staff_info = $stmt->get_result()->fetch_assoc();
+$staff_id = $staff_info['staff_id'];
+
+// 查詢當前員工的資料
+$sql = "SELECT staff_department FROM staff_table WHERE staff_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $staff_id);
+$stmt->execute();
+$staff_info = $stmt->get_result()->fetch_assoc();
+$current_staff_department = $staff_info['staff_department'];
+
+// 查詢所有教室和對應的學院
+$classroom_colleage_map = [];
+$sql = "SELECT classroom, colleage FROM classroom_table";
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $classroom_colleage_map[$row['classroom']] = $row['colleage'];
+}
 
 // 查詢所有租借記錄
 $sql = "SELECT * FROM rental_table ORDER BY create_time ASC, username ASC, rent_date ASC, rent_period ASC";
@@ -31,7 +67,7 @@ $rental_list = array();
 while ($row = $result->fetch_assoc()) {
     // 創建一個唯一鍵
     $unique_key = $row['create_time'] . '_' . $row['username'];
-    
+
     if (isset($rental_list[$unique_key])) {
         if ($row['rent_period'] == 'A') {
             if ($rental_list[$unique_key]['start_period'] <= "4") {
@@ -61,6 +97,25 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
+// 計算租借狀態為 'U' 的唯一組合數量
+$sql = "SELECT COUNT(DISTINCT r.create_time, r.username) AS unique_count 
+        FROM rental_table r
+        JOIN classroom_table c ON r.classroom = c.classroom
+        WHERE r.rent_status = 'U' AND (c.colleage = ? OR ? = 'ALL')";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $current_staff_department, $current_staff_department);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// 獲取查詢結果
+if ($result) {
+    $row = $result->fetch_assoc();
+    $unique_count = $row['unique_count'];
+} else {
+    // 如果查詢失敗，輸出錯誤信息
+    $unique_count = "Er";
+}
+
 // 現在$rental_list包含合併後的記錄
 ?>
 
@@ -73,7 +128,7 @@ while ($row = $result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>資源租借系統 - 管理介面</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
-    
+
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -244,6 +299,14 @@ while ($row = $result->fetch_assoc()) {
                             <?php endif; ?>
                             <?php $conn->close(); ?>
                             <?php foreach ($rental_list as $rental): ?>
+                                <?php
+                                // 從查詢結果中獲取該租借記錄的classroom對應的colleage
+                                $classroom = $rental['classroom'];
+                                $classroom_colleage = isset($classroom_colleage_map[$classroom]) ? $classroom_colleage_map[$classroom] : '';
+                                // 判斷當前用戶是否有權限審核
+                                $can_review = ($current_staff_department == 'ALL' || $current_staff_department == $classroom_colleage);
+                                ?>
+                                <?php if ($can_review): ?>
                                 <tr
                                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $rental['create_time']; ?>
@@ -252,15 +315,17 @@ while ($row = $result->fetch_assoc()) {
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $rental['classroom']; ?></td>
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $rental['rent_date']; ?></td>
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3">
-                                        <?php if ($rental['start_period'] == $rental['end_period']) {
+                                        <?php
+                                        if ($rental['start_period'] == $rental['end_period']) {
                                             echo $rental['start_period'];
                                         } else {
                                             echo $rental['start_period'] . "-" . $rental['end_period'];
-                                        } ?>
+                                        }
+                                        ?>
                                     </td>
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3"><?php echo $rental['reason']; ?></td>
                                     <td class="bg-white dark:bg-gray-800 px-6 py-3">
-                                        <?php if ($rental['rent_status'] == 'U'): ?>
+                                        <?php if ($rental['rent_status'] == 'U' && $can_review): ?>
                                             <select
                                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                 name="status[<?php echo $rental['create_time']; ?>]">
@@ -272,6 +337,8 @@ while ($row = $result->fetch_assoc()) {
                                         <?php endif; ?>
                                     </td>
                                 </tr>
+                                <?php endif; ?>
+
                             <?php endforeach; ?>
 
                         </tbody>
