@@ -3946,7 +3946,7 @@ ALTER TABLE `course_table`
 -- 資料表索引 `rental_table`
 --
 ALTER TABLE `rental_table`
-  ADD PRIMARY KEY (`classroom`,`rent_date`,`rent_period`) USING BTREE;
+  ADD PRIMARY KEY (`classroom`,`rent_date`,`rent_period`,`username`) USING BTREE;
 
 --
 -- 資料表索引 `staff_account`
@@ -3996,7 +3996,7 @@ ALTER TABLE `user_data`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `user_data`
 --
 ALTER TABLE `user_data`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- 已傾印資料表的限制式
