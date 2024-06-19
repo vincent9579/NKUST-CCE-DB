@@ -98,9 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
 
+            // Ensure no references before deleting
             $sql = "DELETE FROM student_table WHERE std_id=?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $std_id);
+            $stmt->bind_param("s", $std_id); // std_id is a string
             $stmt->execute();
         } elseif ($user_type == 'staff') {
             $sql = "DELETE FROM staff_account WHERE user_id=?";
@@ -108,9 +109,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
 
+            // Ensure no references before deleting
+            $sql = "DELETE FROM staff_classroom WHERE staff_id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $staff_id); // staff_id is a string
+            $stmt->execute();
+
             $sql = "DELETE FROM staff_table WHERE staff_id=?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $staff_id);
+            $stmt->bind_param("s", $staff_id); // staff_id is a string
             $stmt->execute();
         }
 
@@ -119,8 +126,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
+    }// delete user
+    $user_id = $_POST['user_id'];
+
+    // get user type
+    $sql = "SELECT * FROM student_account WHERE user_id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $user_type = 'student';
+        $row = $result->fetch_assoc();
+        $std_id = $row['std_id'];
+    } else {
+        $sql = "SELECT * FROM staff_account WHERE user_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $user_type = 'staff';
+            $row = $result->fetch_assoc();
+            $staff_id = $row['staff_id'];
+        }
     }
+
+    // delete user data
+    if ($user_type == 'student') {
+        $sql = "DELETE FROM student_account WHERE user_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        // Ensure no references before deleting
+        $sql = "DELETE FROM student_table WHERE std_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $std_id); // std_id is a string
+        $stmt->execute();
+    } elseif ($user_type == 'staff') {
+        $sql = "DELETE FROM staff_account WHERE user_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        // Ensure no references before deleting
+        $sql = "DELETE FROM staff_classroom WHERE staff_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $staff_id); // staff_id is a string
+        $stmt->execute();
+
+        $sql = "DELETE FROM staff_table WHERE staff_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $staff_id); // staff_id is a string
+        $stmt->execute();
+    }
+
+    // delete user
+    $sql = "DELETE FROM user_data WHERE user_id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
 }
+
 
 
 // get all users
