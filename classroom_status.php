@@ -398,13 +398,6 @@ while ($row = $rental->fetch_assoc()) {
                                         <td class="px-6 py-4  text-sm font-medium text-gray-900 dark:text-white">
                                             <?php if (isset($timeTable[$j][$i])): ?>
                                                 <?php $row = $timeTable[$j][$i]; ?>
-                                                <?php if ($row['course_name'] == "租借"): ?>
-                                                    <input id="checkbox_<?= $j ?>_<?= $i ?>" type="checkbox"
-                                                        name="checkbox[<?= $j ?>][<?= $i ?>]" value="<?= $j ?>_<?= $i ?>"
-                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-column-<?= $j ?>"
-                                                        data-column="<?= $j ?>" data-row="<?= $i ?>"
-                                                        onclick="limitCheckbox(this, <?= $j ?>, <?= $i ?>)">
-                                                <?php endif; ?>
                                                 <?= $row['course_name'] ?><br>
                                                 <?= $row['instructor'] ?><br>
                                                 <?= $row['major'] ?>

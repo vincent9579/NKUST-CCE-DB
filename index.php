@@ -46,6 +46,12 @@ $total_pages = ceil($total_rows / $limit);
 // 獲取當前頁的記錄
 $query = "SELECT * FROM classroom_table $where LIMIT $limit OFFSET $offset";
 $result = $conn->query($query);
+
+// 生成保留搜尋條件的URL參數
+$query_params = http_build_query([
+    'limit' => $limit,
+    'colleage' => $colleage
+]);
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +72,8 @@ $result = $conn->query($query);
 
 <body class="bg-white dark:bg-gray-900">
     <?php include './components/navigaion.php'; ?>
+
+
     <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
         <form method="GET" action="" class="flex flex-wrap space-x-4">
             <div class="mb-4 flex-1">
@@ -92,9 +100,7 @@ $result = $conn->query($query);
                     class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">過濾</button>
             </div>
         </form>
-    </div>
 
-    <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
         <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
             aria-label="Table navigation">
             <span
@@ -106,11 +112,11 @@ $result = $conn->query($query);
             <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
                 <?php if ($page > 1): ?>
                     <li>
-                        <a href="?page=1&limit=<?= $limit ?>"
+                        <a href="?page=1&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">First</a>
                     </li>
                     <li>
-                        <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $page - 1 ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
                     </li>
                 <?php endif; ?>
@@ -141,7 +147,7 @@ $result = $conn->query($query);
                     else:
                         ?>
                         <li>
-                            <a href="?page=<?= $p ?>&limit=<?= $limit ?>"
+                            <a href="?page=<?= $p ?>&<?= $query_params ?>"
                                 class="flex items-center justify-center px-3 h-8 leading-tight <?= $p == $page ? 'text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white' ?>"><?= $p ?></a>
                         </li>
                         <?php
@@ -151,11 +157,11 @@ $result = $conn->query($query);
 
                 <?php if ($page < $total_pages): ?>
                     <li>
-                        <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $page + 1 ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
                     </li>
                     <li>
-                        <a href="?page=<?= $total_pages ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $total_pages ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Last</a>
                     </li>
                 <?php endif; ?>
@@ -169,9 +175,26 @@ $result = $conn->query($query);
                         <th scope="col" class="px-6 py-3">教室編號</th>
                         <th scope="col" class="px-6 py-3">學院/大樓</th>
                         <th scope="col" class="px-6 py-3">最大容納人數</th>
-                        <th scope="col" class="px-6 py-3">資料正確性</th>
+                        <th scope="col" class="px-6 py-3">
+                            <button data-popover-target="popover-default" type="button">資料正確性</button>
+
+                        </th>
                     </tr>
                 </thead>
+                <div data-popover id="popover-default" role="tooltip"
+                                class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
+                                <div
+                                    class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+                                    <h3 class="font-semibold text-gray-900 dark:text-white">備註</h3>
+                                </div>
+                                <div class="px-3 py-2">
+                                    <p>✅ 代表依據學校給予的最大選課人數或是實際課桌椅數的數據</p>
+                                    <p>
+                                    ❓為非實際數據，僅供參考
+                                    </p>
+                                </div>
+                                <div data-popper-arrow></div>
+                            </div>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr
@@ -196,11 +219,11 @@ $result = $conn->query($query);
             <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
                 <?php if ($page > 1): ?>
                     <li>
-                        <a href="?page=1&limit=<?= $limit ?>"
+                        <a href="?page=1&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">First</a>
                     </li>
                     <li>
-                        <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $page - 1 ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
                     </li>
                 <?php endif; ?>
@@ -231,7 +254,7 @@ $result = $conn->query($query);
                     else:
                         ?>
                         <li>
-                            <a href="?page=<?= $p ?>&limit=<?= $limit ?>"
+                            <a href="?page=<?= $p ?>&<?= $query_params ?>"
                                 class="flex items-center justify-center px-3 h-8 leading-tight <?= $p == $page ? 'text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white' : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white' ?>"><?= $p ?></a>
                         </li>
                         <?php
@@ -241,11 +264,11 @@ $result = $conn->query($query);
 
                 <?php if ($page < $total_pages): ?>
                     <li>
-                        <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $page + 1 ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
                     </li>
                     <li>
-                        <a href="?page=<?= $total_pages ?>&limit=<?= $limit ?>"
+                        <a href="?page=<?= $total_pages ?>&<?= $query_params ?>"
                             class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Last</a>
                     </li>
                 <?php endif; ?>
