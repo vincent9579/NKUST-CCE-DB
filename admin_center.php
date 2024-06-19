@@ -33,19 +33,18 @@ while ($row = $result->fetch_assoc()) {
     $unique_key = $row['create_time'] . '_' . $row['username'];
     
     if (isset($rental_list[$unique_key])) {
-        // 已存在的記錄，更新租借時段
         if ($row['rent_period'] == 'A') {
-            // 如果當前時段是 'A'，更新為全天
-            $rental_list[$unique_key]['start_period'] = 'A';
-            $rental_list[$unique_key]['end_period'] = 'A';
+            if ($rental_list[$unique_key]['start_period'] <= "4") {
+                if ($rental_list[$unique_key]['end_period'] == '5') {
+                    continue;
+                } else {
+                    $rental_list[$unique_key]['end_period'] = 'A';
+                }
+            } else {
+                $rental_list[$unique_key]['start_period'] = 'A';
+            }
         } else {
-            // 更新 start_period 和 end_period
-            if ($rental_list[$unique_key]['start_period'] != 'A' && intval($row['rent_period']) < intval($rental_list[$unique_key]['start_period'])) {
-                $rental_list[$unique_key]['start_period'] = $row['rent_period'];
-            }
-            if ($rental_list[$unique_key]['end_period'] != 'A' && intval($row['rent_period']) > intval($rental_list[$unique_key]['end_period'])) {
-                $rental_list[$unique_key]['end_period'] = $row['rent_period'];
-            }
+            $rental_list[$unique_key]['end_period'] = $row['rent_period'];
         }
     } else {
         // 新記錄，創建新條目
