@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $A = "A";
 
-    // 验证是否存在冲突
+    // Check if the requested date and classroom are already booked
     $query = "SELECT * FROM rental_table WHERE classroom = ? AND rent_date = ? AND rent_status = 'Y'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ss", $classroom, $rent_date);
@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // Proceed with the existing insertion logic...
-
     if (($start_period == "A") && ($end_period == "A")) {
         $stmt = $conn->prepare("INSERT INTO rental_table (username, classroom, rent_date, rent_period, reason) VALUES ( ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $username, $classroom, $rent_date, $A, $reason);

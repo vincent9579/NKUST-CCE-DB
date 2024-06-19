@@ -144,9 +144,25 @@ if (!isset($_SESSION['username'])) {
                                     if ($rental['rent_status'] == 'U') {
                                         echo "審核中";
                                     } else if ($rental['rent_status'] == 'Y') {
-                                        echo "已審核";
+                                        $stmt = $conn->prepare("
+                                            SELECT staff_table.staff_room 
+                                            FROM classroom_table 
+                                            JOIN staff_table ON classroom_table.colleage = staff_table.staff_department 
+                                            WHERE classroom_table.classroom = ?
+                                        ");
+                                        $stmt->bind_param("s", $rental['classroom']);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo "審核通過 (請至 " . $row["staff_room"] . " 租借鑰匙)";
+                                            }
+                                        } else {
+                                            echo "審核通過";
+                                        }
+
                                     } else {
-                                        echo "未通過";
+                                        echo "審核未通過";
                                     }
                                     ?>
                                 </td>
