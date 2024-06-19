@@ -32,6 +32,10 @@ $conditions = [];
 if ($colleage) {
     $conditions[] = "colleage = '" . $conn->real_escape_string($colleage) . "'";
 }
+$classroom = isset($_GET['classroom']) ? $_GET['classroom'] : '';
+if ($classroom) {
+    $conditions[] = "classroom = '" . $conn->real_escape_string($classroom) . "'";
+}
 $where = '';
 if (count($conditions) > 0) {
     $where = 'WHERE ' . implode(' AND ', $conditions);
@@ -50,7 +54,8 @@ $result = $conn->query($query);
 // 生成保留搜尋條件的URL參數
 $query_params = http_build_query([
     'limit' => $limit,
-    'colleage' => $colleage
+    'colleage' => $colleage,
+    'classroom' => $classroom
 ]);
 ?>
 
@@ -61,24 +66,37 @@ $query_params = http_build_query([
     <title>資源租借系統</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script>
+
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark')
         }
+
+        function autoSubmitForm() {
+            document.getElementById('filter-form').submit();
+        }
+
+        function clearFilters() {
+            document.getElementById('limit').value = '10';
+            document.getElementById('colleage').value = '';
+            document.getElementById('classroom').value = '';
+            document.getElementById('filter-form').submit();
+        }
+
     </script>
 </head>
 
 <body class="bg-white dark:bg-gray-900">
     <?php include './components/navigaion.php'; ?>
 
-
     <div class="max-w-screen-xl mx-auto p-4 sm:p-6 lg:p-8">
-        <form method="GET" action="" class="flex flex-wrap space-x-4">
+
+        <form method="GET" action="" id="filter-form" class="flex flex-wrap space-x-4">
             <div class="mb-4 flex-1">
                 <label for="limit" class="block text-sm font-medium text-gray-900 dark:text-white">每一頁顯示的記錄數</label>
-                <select name="limit" id="limit"
+                <select name="limit" id="limit" onchange="autoSubmitForm()"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option value="10" <?= $limit == 10 ? 'selected' : ''; ?>>10</option>
                     <option value="20" <?= $limit == 20 ? 'selected' : ''; ?>>20</option>
@@ -87,7 +105,7 @@ $query_params = http_build_query([
             </div>
             <div class="mb-4 flex-1">
                 <label for="colleage" class="block text-sm font-medium text-gray-900 dark:text-white">學院:</label>
-                <select name="colleage" id="colleage"
+                <select name="colleage" id="colleage" onchange="autoSubmitForm()"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option selected value="">顯示全部學院</option>
                     <?php foreach ($colleages as $c): ?>
@@ -95,9 +113,15 @@ $query_params = http_build_query([
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div class="mb-4 flex-1">
+                <label for="classroom" class="block text-sm font-medium text-gray-900 dark:text-white">教室:</label>
+                <input type="text" name="classroom" id="classroom" value="<?= $classroom ?>"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+
             <div class="flex items-end mb-4">
-                <button type="submit"
-                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">過濾</button>
+                <button type="button" onclick="clearFilters()"
+                    class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-700">清除條件</button>
             </div>
         </form>
 
@@ -182,19 +206,19 @@ $query_params = http_build_query([
                     </tr>
                 </thead>
                 <div data-popover id="popover-default" role="tooltip"
-                                class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
-                                <div
-                                    class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
-                                    <h3 class="font-semibold text-gray-900 dark:text-white">備註</h3>
-                                </div>
-                                <div class="px-3 py-2">
-                                    <p>✅ 代表依據學校給予的最大選課人數或是實際課桌椅數的數據</p>
-                                    <p>
-                                    ❓為非實際數據，僅供參考
-                                    </p>
-                                </div>
-                                <div data-popper-arrow></div>
-                            </div>
+                    class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800">
+                    <div
+                        class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">備註</h3>
+                    </div>
+                    <div class="px-3 py-2">
+                        <p>✅ 代表依據學校給予的最大選課人數或是實際課桌椅數的數據</p>
+                        <p>
+                            ❓為非實際數據，僅供參考
+                        </p>
+                    </div>
+                    <div data-popper-arrow></div>
+                </div>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr
@@ -278,6 +302,7 @@ $query_params = http_build_query([
     <?php include './components/footer.php'; ?>
     <script src="./static/js/theme-toggle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+
 </body>
 
 </html>
