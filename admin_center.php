@@ -1,7 +1,10 @@
 <?php
+// 開始 session
 if (!isset($_SESSION)) {
     session_start();
 }
+
+// 檢查用戶是否登錄及是否為管理員
 if (!isset($_SESSION['username'])) {
     $status = "invalid";
     $is_admin = "N";
@@ -10,35 +13,43 @@ if (!isset($_SESSION['username'])) {
     $is_admin = $_SESSION['is_admin'];
 }
 
+// 如果不是管理員，重定向到首頁
 if ($is_admin != 'Y') {
     header("Location: index.php");
     exit();
 }
 
+// 連接到數據庫
 $conn = require_once "config.php";
 
-$sql = "SELECT * FROM rental_table ORDER BY rent_date ASC, rent_period ASC";
+// 查詢所有租借記錄
+$sql = "SELECT * FROM rental_table ORDER BY create_time ASC, username ASC, rent_date ASC, rent_period ASC";
 $result = $conn->query($sql);
 
 $rental_list = array();
+
 while ($row = $result->fetch_assoc()) {
-    $temp[] = $row['rent_period'];
-    if (isset($rental_list[$row['create_time']])) {
+    // 創建一個唯一鍵
+    $unique_key = $row['create_time'] . '_' . $row['username'];
+    
+    if (isset($rental_list[$unique_key])) {
+        // 已存在的記錄，更新租借時段
         if ($row['rent_period'] == 'A') {
-            if ($rental_list[$row['create_time']]['start_period'] <= "4") {
-                if ($rental_list[$row['create_time']]['end_period'] == '5') {
-                    continue;
-                } else {
-                    $rental_list[$row['create_time']]['end_period'] = 'A';
-                }
-            } else {
-                $rental_list[$row['create_time']]['start_period'] = 'A';
-            }
+            // 如果當前時段是 'A'，更新為全天
+            $rental_list[$unique_key]['start_period'] = 'A';
+            $rental_list[$unique_key]['end_period'] = 'A';
         } else {
-            $rental_list[$row['create_time']]['end_period'] = $row['rent_period'];
+            // 更新 start_period 和 end_period
+            if ($rental_list[$unique_key]['start_period'] != 'A' && intval($row['rent_period']) < intval($rental_list[$unique_key]['start_period'])) {
+                $rental_list[$unique_key]['start_period'] = $row['rent_period'];
+            }
+            if ($rental_list[$unique_key]['end_period'] != 'A' && intval($row['rent_period']) > intval($rental_list[$unique_key]['end_period'])) {
+                $rental_list[$unique_key]['end_period'] = $row['rent_period'];
+            }
         }
     } else {
-        $rental_list[$row['create_time']] = array(
+        // 新記錄，創建新條目
+        $rental_list[$unique_key] = array(
             'create_time' => $row['create_time'],
             'username' => $row['username'],
             'classroom' => $row['classroom'],
@@ -50,6 +61,8 @@ while ($row = $result->fetch_assoc()) {
         );
     }
 }
+
+// 現在$rental_list包含合併後的記錄
 ?>
 
 <!DOCTYPE html>
