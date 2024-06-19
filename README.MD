@@ -2,8 +2,7 @@
 ## 預覽
 [https://db.cangw.eu.org/](https://db.cangw.eu.org/)
 ## 版本資訊
-> 如果SQL或是PHP沒辦法正常用，推薦把Appserv解安裝換XAMPP
-Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/xampp-windows-x64-8.2.12-0-VS16-installer.exe)
+> 如果SQL或是PHP沒辦法正常用，請把Appserv解安裝換[XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/xampp-windows-x64-8.2.12-0-VS16-installer.exe)
 - Apache 2.4.58
 - MariaDB 10.4.32
 - PHP 8.2.12
@@ -12,54 +11,48 @@ Use [XAMPP](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/
 - 前端：HTML + Tailwind CSS (flowbite) + JavaScript
 - 後端：PHP
 - SQL: MariaDB
-## 建議
-- 一個功能開一個Branch
-- [遵循Commit守則](https://heidiliu2020.github.io/git-commit-message/)，可使用Add/Update(Edit)/Del表示檔案新增、刪除、修改
 
 ## 帳號
 **管理員帳號** 
 admin:12345678
-
+admin1:12345678 (電資學院管理帳號)
+**普通測試帳號**
+test1:12345678
 ## 說明
-**BUG**
-- 已知未登入帳戶無法租借
+請先更改config.php中的SQL設定
 
-**已經做完的**
-- login.php + login.html
-    登入介面，基本上已經做完了
-- logout.php
-    登出的接口，也已經做完了
-- index.php
-    首頁，看之後要放甚麼
-- config.php
-    存放資料庫登入資訊的地方
-- classroom_status.php
-    查詢教室當前狀況
-- rent_classroom.php
-    租借教室
-- rental_records.php
-    租借紀錄
-- register.php
-    應該能註冊了
-- admin_center.php
-    管理中心，單純審核用
+**檔案目錄 含各檔案大概功能**
+```
+NKUST-CCE-DB
+├── components (分離後的元件資料夾)
+│   ├── footer.php (底欄)
+│   ├── navigaion.php (導航欄)
+│   ├── rent_form.php (從classroom_status跳轉到rent_classroom顯示的租借單)
+│   ├── rent_table.php (依照時間下去查會顯示的可租借教室清單)
+│   ├── sidebar.php (管理中心側邊導航欄)
+├── DB
+│   └── final_project.sql (所需的MySQL資料庫)
+├── static
+│   └── js
+│       └── theme-toggle.js (主題切換所需的JavaScript)
+├── admin_center.php (管理中心)
+├── approve.php (審核的api)
+├── classroom_status.php (查詢教室課表及租借狀態)
+├── config.php (php的設定檔)
+├── index.php (主頁)
+├── login_api.php (登入的api)
+├── login.php (登入頁面)
+├── logout.php (登出的api)
+├── reg.php (註冊的api)
+├── register.php (註冊頁面)
+├── rent_classroom.php (租借教室)
+├── rent.php (租借的api)
+├── rental_record.php (租借紀錄頁面)
+├── template.php (網頁模板)
+└── user_management.php (管理中心的用戶管理)
+```
 
 **資料庫**
-final_project 為主要的資料庫 另一個已經廢棄了
-final_project下有四個資料表：
-- user_data 
-存放登入系統中的帳戶資訊
-- course_table 
-目前沒主鍵，主鍵可能為classroom與class_time作為復合主鍵，有主鍵後應該就是1NF了，之後可以刪除一些用不到的欄位作為查詢教室是否被占用的其中一個資料庫
-- nkust_course_table
-從[高科課程資訊](https://webap.nkust.edu.tw/nkust/ag_pro/ag202.jsp)爬下來的資料表，只有第一校區的資料，同時也是主頁那個Form所查的資料
-- nkust_course_table_cleaned
-course_table 1NF之前的資料表，基本上沒用處，之後會刪掉
+資料一部分是從[高科課程資訊](https://webap.nkust.edu.tw/nkust/ag_pro/ag202.jsp)爬下來的資料，以及一些零星學校網頁資料及我們自身經驗
+借鑰匙的地點都是假資料
 
-## Roadmap
-| 描述 | 狀態 |
-| ----  | ---- |
-| 完整測試 | 進行中 |
-| 前端美化 | 進行中 |
-| 將後端與前端分離 | 未完成 |
-| 後端node js + 前端 vue | 未來在做 |
